@@ -1,0 +1,3543 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOUMWEB | Apprentissage Ultime avec IA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --info-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            
+            --shadow-soft: 0 10px 40px rgba(0,0,0,0.1);
+            --shadow-medium: 0 20px 60px rgba(0,0,0,0.15);
+            --shadow-strong: 0 30px 80px rgba(0,0,0,0.2);
+            
+            --border-radius: 20px;
+            --border-radius-lg: 30px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+        }
+
+        /* Dark mode support */
+        .dark {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: #e2e8f0;
+        }
+
+        /* Custom animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slide-in {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+        .animate-slide-in { animation: slide-in 0.6s ease-out; }
+        .animate-gradient { 
+            background-size: 200% 200%;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        /* Header styles */
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        .nav-links a {
+            position: relative;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Hero section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s linear infinite;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Button styles */
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius-lg);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .btn-info {
+            background: var(--info-gradient);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        /* Section styles */
+        .section {
+            padding: 6rem 2rem;
+            position: relative;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius-lg);
+            padding: 3rem;
+            box-shadow: var(--shadow-medium);
+            backdrop-filter: blur(10px);
+        }
+
+        .dark .section-container {
+            background: rgba(45, 55, 72, 0.95);
+            color: #e2e8f0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .dark .section-subtitle {
+            color: #a0aec0;
+        }
+
+        /* Card styles */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark .card {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .card-icon.conjugaison {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .card-icon.orthographe {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .card-icon.grammaire {
+            background: var(--info-gradient);
+            color: white;
+        }
+
+        .card-icon.vocabulaire {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .card-icon.ia {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .dark .card h3 {
+            color: #e2e8f0;
+        }
+
+        .card p {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .dark .card p {
+            color: #a0aec0;
+        }
+
+        /* Interactive elements */
+        .quiz-container {
+            background: linear-gradient(135deg, #f8faff 0%, #e6f3ff 100%);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(79, 172, 254, 0.2);
+        }
+
+        .dark .quiz-container {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            border-color: rgba(79, 172, 254, 0.3);
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #2d3748;
+            text-align: center;
+        }
+
+        .dark .quiz-question {
+            color: #e2e8f0;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark .quiz-option {
+            background: #4a5568;
+            border-color: #718096;
+            color: #e2e8f0;
+        }
+
+        .quiz-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--success-gradient);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .quiz-option:hover::before,
+        .quiz-option.selected::before {
+            left: 0;
+        }
+
+        .quiz-option:hover,
+        .quiz-option.selected {
+            color: white;
+            border-color: #4facfe;
+            transform: translateY(-2px);
+        }
+
+        /* Vocabulary themes */
+        .vocabulary-themes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .theme-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dark .theme-card {
+            background: #4a5568;
+            color: #e2e8f0;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .theme-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .word-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .word-tag {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .word-tag:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Memory game */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: var(--primary-gradient);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-card.flipped {
+            background: white;
+            color: #2d3748;
+            border: 2px solid #e2e8f0;
+        }
+
+        .dark .memory-card.flipped {
+            background: #4a5568;
+            color: #e2e8f0;
+            border-color: #718096;
+        }
+
+        /* Chatbot */
+        .chatbot-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
+            overflow: hidden;
+        }
+
+        .dark .chatbot-container {
+            background: #2d3748;
+        }
+
+        .chatbot-header {
+            background: var(--secondary-gradient);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .chatbot-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f8faff;
+        }
+
+        .dark .chatbot-messages {
+            background: #1a202c;
+        }
+
+        .chatbot-message {
+            margin-bottom: 1rem;
+            padding: 0.8rem 1.2rem;
+            border-radius: var(--border-radius);
+            max-width: 80%;
+            position: relative;
+            animation: slide-in 0.3s ease;
+        }
+
+        .chatbot-message.user {
+            background: var(--primary-gradient);
+            color: white;
+            margin-left: auto;
+        }
+
+        .chatbot-message.bot {
+            background: white;
+            border: 1px solid #e2e8f0;
+            margin-right: auto;
+        }
+
+        .dark .chatbot-message.bot {
+            background: #4a5568;
+            border-color: #718096;
+            color: #e2e8f0;
+        }
+
+        .chatbot-input {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: white;
+        }
+
+        .dark .chatbot-input {
+            background: #2d3748;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 1rem;
+        }
+
+        .dark .chatbot-input input {
+            background: #4a5568;
+            border-color: #718096;
+            color: #e2e8f0;
+        }
+
+        .chatbot-input button {
+            background: var(--secondary-gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-input button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Progress indicators */
+        .progress-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .dark .progress-container {
+            background: #4a5568;
+            color: #e2e8f0;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .dark .progress-bar {
+            background: #718096;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success-gradient);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-strong);
+        }
+
+        .dark .modal-content {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quiz-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .memory-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* Utility classes */
+        .hidden { display: none !important; }
+        .fade-in { opacity: 0; animation: slide-in 0.6s ease forwards; }
+        .text-center { text-align: center; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mt-4 { margin-top: 1rem; }
+        .p-4 { padding: 1rem; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="flex justify-between items-center max-w-6xl mx-auto px-6 py-4">
+            <div class="logo">SOUM<span style="color: white;">WEB</span></div>
+            <ul class="nav-links flex space-x-6">
+                <li><a href="#hero"><i class="fas fa-home mr-2"></i>Accueil</a></li>
+                <li><a href="#conjugaison"><i class="fas fa-spell-check mr-2"></i>Conjugaison</a></li>
+                <li><a href="#orthographe"><i class="fas fa-pen mr-2"></i>Orthographe</a></li>
+                <li><a href="#grammaire"><i class="fas fa-book mr-2"></i>Grammaire</a></li>
+                <li><a href="#vocabulaire"><i class="fas fa-language mr-2"></i>Vocabulaire</a></li>
+                <li><a href="#ia-tools"><i class="fas fa-robot mr-2"></i>IA</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-content animate-slide-in">
+            <h1 class="animate-pulse-soft">🚀 Apprendre le français avec l'IA</h1>
+            <p>Découvrez une nouvelle façon d'apprendre le français grâce à des outils intelligents, des jeux interactifs et des exercices adaptatifs qui s'ajustent à votre niveau.</p>
+            <a href="#conjugaison" class="btn btn-primary animate-float">
+                <i class="fas fa-play mr-2"></i>Commencer l'aventure
+            </a>
+        </div>
+    </section>
+
+    <!-- Section Conjugaison -->
+    <section id="conjugaison" class="section">
+        <div class="section-container animate-slide-in">
+            <div class="section-header">
+                <h2 class="section-title">📚 Conjugaison Intelligente</h2>
+                <p class="section-subtitle">Maîtrisez la conjugaison française avec des exercices adaptatifs et des jeux interactifs</p>
+            </div>
+
+            <div class="card-grid">
+                <!-- Quiz Adaptatif Avancé -->
+                <div class="card">
+                    <div class="card-icon conjugaison animate-pulse-soft">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>🎯 Quiz Adaptatif Intelligent</h3>
+                    <p>Un système d'IA qui analyse vos réponses et adapte la difficulté pour optimiser votre apprentissage.</p>
+                    <button class="btn btn-success" onclick="startAdaptiveQuiz()">
+                        <i class="fas fa-play mr-2"></i>Commencer le quiz
+                    </button>
+
+                    <div id="adaptive-quiz" class="quiz-container hidden">
+                        <div id="quiz-progress" class="progress-container">
+                            <div class="flex justify-between items-center mb-2">
+                                <span>Progression</span>
+                                <span id="quiz-score">0/0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-question" id="quiz-question">Question de conjugaison...</div>
+                        <div class="quiz-options" id="quiz-options"></div>
+                        <div class="text-center">
+                            <button class="btn btn-primary" onclick="checkAnswer()">
+                                <i class="fas fa-check mr-2"></i>Vérifier
+                            </button>
+                            <button class="btn btn-info ml-4" onclick="nextQuestion()">
+                                <i class="fas fa-forward mr-2"></i>Suivant
+                            </button>
+                        </div>
+                        <div id="quiz-feedback" class="text-center mt-4 font-bold"></div>
+                        
+                        <div class="mt-6">
+                            <h4 class="font-bold mb-2">📊 Statistiques de performance</h4>
+                            <canvas id="performance-chart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conjugaison par Temps -->
+                <div class="card">
+                    <div class="card-icon conjugaison animate-pulse-soft">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>⏰ Maîtrise des Temps</h3>
+                    <p>Explorez tous les temps de conjugaison avec des exercices ciblés et des explications détaillées.</p>
+                    <button class="btn btn-success" onclick="showTensesOverview()">
+                        <i class="fas fa-list mr-2"></i>Explorer les temps
+                    </button>
+
+                    <div id="tenses-overview" class="hidden">
+                        <div class="vocabulary-themes">
+                            <div class="theme-card" onclick="practiceTense('present')">
+                                <div class="theme-icon">🌅</div>
+                                <h4>Présent</h4>
+                                <p>Actions actuelles</p>
+                            </div>
+                            <div class="theme-card" onclick="practiceTense('passé-composé')">
+                                <div class="theme-icon">📅</div>
+                                <h4>Passé Composé</h4>
+                                <p>Actions passées</p>
+                            </div>
+                            <div class="theme-card" onclick="practiceTense('imparfait')">
+                                <div class="theme-icon">🕰️</div>
+                                <h4>Imparfait</h4>
+                                <p>Actions habituelles</p>
+                            </div>
+                            <div class="theme-card" onclick="practiceTense('futur')">
+                                <div class="theme-icon">🔮</div>
+                                <h4>Futur</h4>
+                                <p>Actions futures</p>
+                            </div>
+                        </div>
+                        <div id="tense-practice" class="quiz-container hidden">
+                            <div id="tense-explanation" class="mb-4 p-4 bg-blue-50 rounded-lg"></div>
+                            <div id="tense-exercises"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reconnaissance Vocale Avancée -->
+                <div class="card">
+                    <div class="card-icon conjugaison animate-pulse-soft">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <h3>🎤 Prononciation Interactive</h3>
+                    <p>Perfectionnez votre prononciation avec notre IA de reconnaissance vocale avancée.</p>
+                    <button class="btn btn-success" onclick="startVoiceTraining()">
+                        <i class="fas fa-microphone mr-2"></i>Commencer l'entraînement
+                    </button>
+
+                    <div id="voice-training" class="hidden">
+                        <div class="text-center p-6">
+                            <div id="word-to-pronounce" class="text-2xl font-bold mb-4">je mange</div>
+                            <button id="voice-btn" class="btn btn-danger mb-4" onclick="startListening()">
+                                <i class="fas fa-microphone mr-2"></i>Enregistrer
+                            </button>
+                            <button class="btn btn-info ml-2" onclick="generateRandomWordToPronounce()">
+                                <i class="fas fa-random mr-2"></i>Nouveau mot
+                            </button>
+                            <div id="voice-feedback" class="mt-4"></div>
+                            <div id="pronunciation-tips" class="mt-4 p-4 bg-yellow-50 rounded-lg hidden">
+                                <h5 class="font-bold">💡 Conseils de prononciation :</h5>
+                                <p id="tip-content"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Orthographe -->
+    <section id="orthographe" class="section">
+        <div class="section-container animate-slide-in">
+            <div class="section-header">
+                <h2 class="section-title">✍️ Orthographe Ludique</h2>
+                <p class="section-subtitle">Améliorez votre orthographe avec des jeux innovants et des exercices personnalisés</p>
+            </div>
+
+            <div class="card-grid">
+                <!-- Dictée Interactive -->
+                <div class="card">
+                    <div class="card-icon orthographe animate-pulse-soft">
+                        <i class="fas fa-headphones"></i>
+                    </div>
+                    <h3>📝 Dictée Interactive</h3>
+                    <p>Écoutez et écrivez des textes de difficulté progressive avec correction instantanée.</p>
+                    <button class="btn btn-warning" onclick="startDictation()">
+                        <i class="fas fa-play mr-2"></i>Commencer la dictée
+                    </button>
+
+                    <div id="dictation-exercise" class="hidden">
+                        <div class="text-center mb-4">
+                            <button id="play-audio" class="btn btn-info">
+                                <i class="fas fa-volume-up mr-2"></i>Écouter
+                            </button>
+                            <button class="btn btn-secondary ml-2" onclick="playSlowly()">
+                                <i class="fas fa-turtle mr-2"></i>Lent
+                            </button>
+                            <button class="btn btn-primary ml-2" onclick="startDictation()">
+                                <i class="fas fa-refresh mr-2"></i>Nouvelle phrase
+                            </button>
+                        </div>
+                        <textarea id="dictation-text" class="w-full p-4 border rounded-lg text-base" rows="5" placeholder="Écrivez ce que vous entendez..."></textarea>
+                        <div class="text-center mt-4">
+                            <button class="btn btn-primary" onclick="checkDictation()">
+                                <i class="fas fa-check mr-2"></i>Vérifier
+                            </button>
+                        </div>
+                        <div id="dictation-feedback" class="mt-4"></div>
+                    </div>
+                </div>
+
+                <!-- Mots Fréquents -->
+                <div class="card">
+                    <div class="card-icon orthographe animate-pulse-soft">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <h3>📊 Mots Fréquents</h3>
+                    <p>Maîtrisez l'orthographe des 1000 mots les plus utilisés en français avec des jeux variés.</p>
+                    <button class="btn btn-warning" onclick="showFrequentWords()">
+                        <i class="fas fa-chart-bar mr-2"></i>Explorer les mots
+                    </button>
+
+                    <div id="frequent-words" class="hidden">
+                        <div class="vocabulary-themes">
+                            <div class="theme-card" onclick="practiceWordCategory('100-most-common')">
+                                <div class="theme-icon">⭐</div>
+                                <h4>Top 100</h4>
+                                <p>Les plus essentiels</p>
+                            </div>
+                            <div class="theme-card" onclick="practiceWordCategory('verbs')">
+                                <div class="theme-icon">🏃</div>
+                                <h4>Verbes</h4>
+                                <p>Actions importantes</p>
+                            </div>
+                            <div class="theme-card" onclick="practiceWordCategory('adjectives')">
+                                <div class="theme-icon">🎨</div>
+                                <h4>Adjectifs</h4>
+                                <p>Descriptions utiles</p>
+                            </div>
+                            <div class="theme-card" onclick="practiceWordCategory('difficult')">
+                                <div class="theme-icon">🧩</div>
+                                <h4>Difficiles</h4>
+                                <p>Défi orthographique</p>
+                            </div>
+                        </div>
+                        <div id="word-practice" class="quiz-container hidden">
+                            <div id="word-challenge" class="text-center">
+                                <div id="word-definition" class="text-lg mb-4"></div>
+                                <input type="text" id="word-input" class="text-center text-xl p-4 border rounded-lg text-base" placeholder="Écrivez le mot...">
+                                <button class="btn btn-primary ml-4" onclick="checkWord()">Vérifier</button>
+                            </div>
+                            <div id="word-feedback" class="mt-4 text-center"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Règles d'Orthographe -->
+                <div class="card">
+                    <div class="card-icon orthographe animate-pulse-soft">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>📚 Règles d'Orthographe</h3>
+                    <p>Apprenez les règles importantes avec des exemples et des exercices pratiques.</p>
+                    <button class="btn btn-warning" onclick="showOrthographyRules()">
+                        <i class="fas fa-book-open mr-2"></i>Découvrir les règles
+                    </button>
+
+                    <div id="orthography-rules" class="hidden">
+                        <div class="vocabulary-themes">
+                            <div class="theme-card" onclick="learnRule('accents')">
+                                <div class="theme-icon">é</div>
+                                <h4>Accents</h4>
+                                <p>é, è, ê, ë</p>
+                            </div>
+                            <div class="theme-card" onclick="learnRule('homophones')">
+                                <div class="theme-icon">👥</div>
+                                <h4>Homophones</h4>
+                                <p>à/a, et/est, son/sont</p>
+                            </div>
+                            <div class="theme-card" onclick="learnRule('plurals')">
+                                <div class="theme-icon">📚</div>
+                                <h4>Pluriels</h4>
+                                <p>-s, -x, exceptions</p>
+                            </div>
+                            <div class="theme-card" onclick="learnRule('agreements')">
+                                <div class="theme-icon">🤝</div>
+                                <h4>Accords</h4>
+                                <p>Participe passé</p>
+                            </div>
+                        </div>
+                        <div id="rule-explanation" class="hidden">
+                            <div id="rule-content" class="p-4 bg-blue-50 rounded-lg mb-4"></div>
+                            <div id="rule-exercises" class="quiz-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Grammaire -->
+    <section id="grammaire" class="section">
+        <div class="section-container animate-slide-in">
+            <div class="section-header">
+                <h2 class="section-title">📖 Grammaire Interactive</h2>
+                <p class="section-subtitle">Maîtrisez les règles grammaticales avec des exercices visuels et interactifs</p>
+            </div>
+
+            <div class="card-grid">
+                <!-- Analyse Grammaticale -->
+                <div class="card">
+                    <div class="card-icon grammaire animate-pulse-soft">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>🔍 Analyse Grammaticale</h3>
+                    <p>Identifiez la nature et la fonction des mots dans des phrases avec un système d'aide visuelle.</p>
+                    <button class="btn btn-info" onclick="startGrammarAnalysis()">
+                        <i class="fas fa-magnifying-glass mr-2"></i>Commencer l'analyse
+                    </button>
+
+                    <div id="grammar-analysis" class="hidden">
+                        <div class="quiz-container">
+                            <div id="sentence-to-analyze" class="text-xl mb-6 text-center font-bold"></div>
+                            <div id="word-highlighting" class="mb-4 text-lg leading-relaxed"></div>
+                            <div class="text-center">
+                                <div class="inline-flex flex-wrap gap-2 mb-4">
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Nom</span>
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Verbe</span>
+                                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Adjectif</span>
+                                    <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Adverbe</span>
+                                    <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">Déterminant</span>
+                                </div>
+                            </div>
+                            <div id="analysis-feedback" class="text-center"></div>
+                            <div class="text-center mt-4">
+                                <button class="btn btn-primary" onclick="generateNewSentence()">Nouvelle phrase</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Construction de Phrases -->
+                <div class="card">
+                    <div class="card-icon grammaire animate-pulse-soft">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <h3>🧩 Construction de Phrases</h3>
+                    <p>Apprenez à construire des phrases correctes en assemblant les éléments grammaticaux.</p>
+                    <button class="btn btn-info" onclick="startSentenceBuilder()">
+                        <i class="fas fa-hammer mr-2"></i>Construire des phrases
+                    </button>
+
+                    <div id="sentence-builder" class="hidden">
+                        <div class="quiz-container">
+                            <div id="sentence-target" class="text-lg mb-4 text-center font-bold"></div>
+                            <div id="word-bank" class="mb-6">
+                                <h4 class="font-bold mb-2">Banque de mots :</h4>
+                                <div id="available-words" class="flex flex-wrap gap-2"></div>
+                            </div>
+                            <div id="sentence-construction" class="mb-4">
+                                <h4 class="font-bold mb-2">Votre phrase :</h4>
+                                <div id="constructed-sentence" class="min-h-12 p-4 border-2 border-dashed border-gray-300 rounded-lg flex flex-wrap gap-2 items-center"></div>
+                            </div>
+                            <div class="text-center">
+                                <button class="btn btn-primary" onclick="checkSentence()">Vérifier</button>
+                                <button class="btn btn-secondary ml-2" onclick="clearSentence()">Effacer</button>
+                                <button class="btn btn-info ml-2" onclick="generateSentenceChallenge()">Nouveau défi</button>
+                            </div>
+                            <div id="sentence-feedback" class="mt-4 text-center"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temps et Modes -->
+                <div class="card">
+                    <div class="card-icon grammaire animate-pulse-soft">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>⚙️ Temps et Modes</h3>
+                    <p>Explorez les différents temps et modes avec des exemples et des exercices pratiques.</p>
+                    <button class="btn btn-info" onclick="exploreTensesAndModes()">
+                        <i class="fas fa-compass mr-2"></i>Explorer
+                    </button>
+
+                    <div id="tenses-modes" class="hidden">
+                        <div class="vocabulary-themes">
+                            <div class="theme-card" onclick="exploreMode('indicatif')">
+                                <div class="theme-icon">📊</div>
+                                <h4>Indicatif</h4>
+                                <p>Réalité, certitude</p>
+                            </div>
+                            <div class="theme-card" onclick="exploreMode('subjonctif')">
+                                <div class="theme-icon">💭</div>
+                                <h4>Subjonctif</h4>
+                                <p>Doute, émotion</p>
+                            </div>
+                            <div class="theme-card" onclick="exploreMode('conditionnel')">
+                                <div class="theme-icon">❓</div>
+                                <h4>Conditionnel</h4>
+                                <p>Hypothèse, politesse</p>
+                            </div>
+                            <div class="theme-card" onclick="exploreMode('imperatif')">
+                                <div class="theme-icon">❗</div>
+                                <h4>Impératif</h4>
+                                <p>Ordre, conseil</p>
+                            </div>
+                        </div>
+                        <div id="mode-explanation" class="hidden">
+                            <div id="mode-content" class="p-4 bg-blue-50 rounded-lg mb-4"></div>
+                            <div id="mode-exercises" class="quiz-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Vocabulaire -->
+    <section id="vocabulaire" class="section">
+        <div class="section-container animate-slide-in">
+            <div class="section-header">
+                <h2 class="section-title">🗣 Vocabulaire Enrichi</h2>
+                <p class="section-subtitle">Enrichissez votre vocabulaire avec des thèmes variés et des méthodes d'apprentissage innovantes</p>
+            </div>
+
+            <div class="card-grid">
+                <!-- Thèmes Extensifs -->
+                <div class="card">
+                    <div class="card-icon vocabulaire animate-pulse-soft">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>🌍 Thèmes du Quotidien</h3>
+                    <p>Découvrez plus de 20 thèmes avec 2000+ mots pour enrichir votre vocabulaire quotidien.</p>
+                    <button class="btn btn-danger" onclick="exploreVocabularyThemes()">
+                        <i class="fas fa-search mr-2"></i>Explorer les thèmes
+                    </button>
+
+                    <div id="vocabulary-themes-extended" class="hidden">
+                        <div class="vocabulary-themes">
+                            <div class="theme-card" onclick="loadTheme('famille')">
+                                <div class="theme-icon">👨‍👩‍👧‍👦</div>
+                                <h4>Famille</h4>
+                                <p>75 mots</p>
+                            </div>
+                            <div class="theme-card" onclick="loadTheme('maison')">
+                                <div class="theme-icon">🏠</div>
+                                <h4>Maison</h4>
+                                <p>120 mots</p>
+                            </div>
+                            <div class="theme-card" onclick="loadTheme('nourriture')">
+                                <div class="theme-icon">🍽️</div>
+                                <h4>Nourriture</h4>
+                                <p>150 mots</p>
+                            </div>
+                            <div class="theme-card" onclick="loadTheme('transport')">
+                                <div class="theme-icon">🚗</div>
+                                <h4>Transport</h4>
+                                <p>50 mots</p>
+                            </div>
+                            <div class="theme-card" onclick="loadTheme('metiers')">
+                                <div class="theme-icon">💼</div>
+                                <h4>Métiers</h4>
+                                <p>75 mots</p>
+                            </div>
+                            <div class="theme-card" onclick="loadTheme('emotions')">
+                                <div class="theme-icon">😊</div>
+                                <h4>Émotions</h4>
+                                <p>50 mots</p>
+                            </div>
+                            <div class="theme-card" onclick="loadTheme('nature')">
+                                <div class="theme-icon">🌳</div>
+                                <h4>Nature</h4>
+                                <p>100 mots</p>
+                            </div>
+                            <div class="theme-card" onclick="loadTheme('sports')">
+                                <div class="theme-icon">⚽</div>
+                                <h4>Sports</h4>
+                                <p>90 mots</p>
+                            </div>
+                        </div>
+                        <div id="theme-content" class="quiz-container hidden">
+                            <div id="theme-header" class="text-center mb-4"></div>
+                            <div id="theme-words" class="word-list mb-4"></div>
+                            <div class="text-center">
+                                <button class="btn btn-primary" onclick="startThemeQuiz()">Quiz sur ce thème</button>
+                                <button class="btn btn-info ml-2" onclick="playMemoryGame()">Jeu de mémoire</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Apprentissage Spécialisé -->
+                <div class="card">
+                    <div class="card-icon vocabulaire animate-pulse-soft">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>🎓 Apprentissage Spécialisé</h3>
+                    <p>Méthodes d'apprentissage basées sur la science cognitive pour une mémorisation efficace.</p>
+                    <button class="btn btn-danger" onclick="startSpecializedLearning()">
+                        <i class="fas fa-brain mr-2"></i>Méthodes spécialisées
+                    </button>
+
+                    <div id="specialized-learning" class="hidden">
+                        <div class="vocabulary-themes">
+                            <div class="theme-card" onclick="startSpacedRepetition()">
+                                <div class="theme-icon">🔄</div>
+                                <h4>Répétition Espacée</h4>
+                                <p>Mémorisation optimisée</p>
+                            </div>
+                            <div class="theme-card" onclick="startAssociationGame()">
+                                <div class="theme-icon">🔗</div>
+                                <h4>Associations</h4>
+                                <p>Liens mnémotechniques</p>
+                            </div>
+                            <div class="theme-card" onclick="startContextualLearning()">
+                                <div class="theme-icon">📖</div>
+                                <h4>Apprentissage Contextuel</h4>
+                                <p>Mots en situation</p>
+                            </div>
+                            <div class="theme-card" onclick="startVisualLearning()">
+                                <div class="theme-icon">👁️</div>
+                                <h4>Apprentissage Visuel</h4>
+                                <p>Mémoire visuelle</p>
+                            </div>
+                        </div>
+                        <div id="learning-method-content" class="quiz-container hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Jeux Avancés -->
+                <div class="card">
+                    <div class="card-icon vocabulaire animate-pulse-soft">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>🎮 Jeux Avancés</h3>
+                    <p>Collection de jeux interactifs pour apprendre en s'amusant avec des défis progressifs.</p>
+                    <button class="btn btn-danger" onclick="showAdvancedGames()">
+                        <i class="fas fa-play mr-2"></i>Jouer maintenant
+                    </button>
+
+                    <div id="advanced-games" class="hidden">
+                        <div class="vocabulary-themes">
+                            <div class="theme-card" onclick="playWordChain()">
+                                <div class="theme-icon">🔗</div>
+                                <h4>Chaîne de Mots</h4>
+                                <p>Créez des liens</p>
+                            </div>
+                            <div class="theme-card" onclick="playAnagramGame()">
+                                <div class="theme-icon">🔤</div>
+                                <h4>Anagrammes</h4>
+                                <p>Mélangez les lettres</p>
+                            </div>
+                            <div class="theme-card" onclick="playDefinitionGuess()">
+                                <div class="theme-icon">🎯</div>
+                                <h4>Devine la Définition</h4>
+                                <p>Trouvez le sens</p>
+                            </div>
+                            <div class="theme-card" onclick="playAdvancedMemory()">
+                                <div class="theme-icon">🧠</div>
+                                <h4>Memory Avancé</h4>
+                                <p>Défi de mémoire</p>
+                            </div>
+                        </div>
+                        <div id="game-content" class="quiz-container hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Outils IA -->
+    <section id="ia-tools" class="section">
+        <div class="section-container animate-slide-in">
+            <div class="section-header">
+                <h2 class="section-title">🤖 Outils IA Avancés</h2>
+                <p class="section-subtitle">Découvrez le futur de l'apprentissage avec nos outils d'intelligence artificielle</p>
+            </div>
+
+            <div class="card-grid">
+                <!-- Assistant IA Conversationnel -->
+                <div class="card">
+                    <div class="card-icon ia animate-pulse-soft">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>💬 Assistant IA Conversationnel</h3>
+                    <p>Conversez avec notre IA spécialisée en français pour des réponses personnalisées et interactives.</p>
+                    <button class="btn btn-secondary" onclick="startAIConversation()">
+                        <i class="fas fa-robot mr-2"></i>Parler avec l'IA
+                    </button>
+
+                    <div id="ai-conversation" class="chatbot-container hidden">
+                        <div class="chatbot-header">
+                            <div class="flex items-center">
+                                <i class="fas fa-robot mr-2"></i>
+                                Assistant Français IA
+                                <div class="ml-auto">
+                                    <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                    <span class="text-sm ml-1">En ligne</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chatbot-messages" id="ai-messages">
+                            <div class="chatbot-message bot">
+                                Bonjour ! Je suis votre assistant IA spécialisé en français. 
+                                Posez-moi des questions sur la grammaire, l'orthographe, la conjugaison ou le vocabulaire. 
+                                Je peux aussi vous aider avec des exercices personnalisés ! 😊
+                            </div>
+                        </div>
+                        <div class="chatbot-input">
+                            <input type="text" id="ai-input" class="text-base" placeholder="Posez votre question..." onkeypress="handleEnterPress(event)">
+                            <button onclick="sendAIMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Générateur de Contenu -->
+                <div class="card">
+                    <div class="card-icon ia animate-pulse-soft">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3>✨ Générateur de Contenu</h3>
+                    <p>Générez automatiquement des exercices, des histoires et des défis adaptés à votre niveau.</p>
+                    <button class="btn btn-secondary" onclick="showContentGenerator()">
+                        <i class="fas fa-wand-magic-sparkles mr-2"></i>Générer du contenu
+                    </button>
+
+                    <div id="content-generator" class="hidden">
+                        <div class="quiz-container">
+                            <h4 class="font-bold mb-4">Choisissez le type de contenu :</h4>
+                            <div class="vocabulary-themes">
+                                <div class="theme-card" onclick="generateContent('story')">
+                                    <div class="theme-icon">📚</div>
+                                    <h4>Histoire</h4>
+                                    <p>Récit personnalisé</p>
+                                </div>
+                                <div class="theme-card" onclick="generateContent('exercises')">
+                                    <div class="theme-icon">📝</div>
+                                    <h4>Exercices</h4>
+                                    <p>Défis sur mesure</p>
+                                </div>
+                                <div class="theme-card" onclick="generateContent('poem')">
+                                    <div class="theme-icon">🎭</div>
+                                    <h4>Poème</h4>
+                                    <p>Création poétique</p>
+                                </div>
+                                <div class="theme-card" onclick="generateContent('dialogue')">
+                                    <div class="theme-icon">💬</div>
+                                    <h4>Dialogue</h4>
+                                    <p>Conversation réaliste</p>
+                                </div>
+                            </div>
+                            <div id="content-options" class="hidden">
+                                <h5 class="font-bold mb-2">Personnalisez votre contenu :</h5>
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Niveau :</label>
+                                        <select id="content-level" class="w-full p-2 border rounded text-base">
+                                            <option value="debutant">Débutant</option>
+                                            <option value="intermediaire">Intermédiaire</option>
+                                            <option value="avance">Avancé</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Thème :</label>
+                                        <select id="content-theme" class="w-full p-2 border rounded text-base">
+                                            <option value="aventure">Aventure</option>
+                                            <option value="quotidien">Vie quotidienne</option>
+                                            <option value="fantastique">Fantastique</option>
+                                            <option value="science">Science</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="createContent()">
+                                    <i class="fas fa-sparkles mr-2"></i>Créer
+                                </button>
+                            </div>
+                            <div id="generated-content" class="hidden">
+                                <h5 class="font-bold mb-2">Contenu généré :</h5>
+                                <div id="content-result" class="p-4 bg-gray-50 rounded-lg mb-4 text-base"></div>
+                                <button class="btn btn-info" onclick="analyzeContent()">
+                                    <i class="fas fa-search mr-2"></i>Analyser le contenu
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analyse de Texte IA -->
+                <div class="card">
+                    <div class="card-icon ia animate-pulse-soft">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>📊 Analyse de Texte IA</h3>
+                    <p>Analysez vos textes avec notre IA pour obtenir des conseils d'amélioration personnalisés.</p>
+                    <button class="btn btn-secondary" onclick="showTextAnalyzer()">
+                        <i class="fas fa-microscope mr-2"></i>Analyser un texte
+                    </button>
+
+                    <div id="text-analyzer" class="hidden">
+                        <div class="quiz-container">
+                            <h4 class="font-bold mb-4">Collez votre texte pour analyse :</h4>
+                            <textarea id="text-to-analyze" class="w-full p-4 border rounded-lg mb-4 text-base" rows="6" placeholder="Collez votre texte ici..."></textarea>
+                            <button class="btn btn-primary" onclick="analyzeText()">
+                                <i class="fas fa-search mr-2"></i>Analyser
+                            </button>
+                            
+                            <div id="analysis-results" class="hidden">
+                                <h5 class="font-bold mt-6 mb-4">Résultats de l'analyse :</h5>
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div class="p-4 bg-blue-50 rounded-lg">
+                                        <h6 class="font-bold">Statistiques</h6>
+                                        <div id="text-stats"></div>
+                                    </div>
+                                    <div class="p-4 bg-green-50 rounded-lg">
+                                        <h6 class="font-bold">Niveau de difficulté</h6>
+                                        <div id="difficulty-level"></div>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-yellow-50 rounded-lg mb-4">
+                                    <h6 class="font-bold">Suggestions d'amélioration</h6>
+                                    <div id="improvement-suggestions"></div>
+                                </div>
+                                <div class="p-4 bg-purple-50 rounded-lg">
+                                    <h6 class="font-bold">Erreurs détectées</h6>
+                                    <div id="detected-errors"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="max-w-6xl mx-auto">
+            <h3 class="text-2xl font-bold mb-4">🚀 SOUMWEB - Votre partenaire d'apprentissage</h3>
+            <p class="mb-4">Révolutionnez votre apprentissage du français avec nos outils d'IA de pointe</p>
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="mailto:francais@soumweb.com" class="text-blue-300 hover:text-white">
+                    <i class="fas fa-envelope mr-2"></i>francais@soumweb.com
+                </a>
+                <a href="tel:+33123456789" class="text-blue-300 hover:text-white">
+                    <i class="fas fa-phone mr-2"></i>+33 1 23 45 67 89
+                </a>
+            </div>
+            <p class="text-sm opacity-75">&copy; 2025 SOUMWEB. Tous droits réservés. | 
+                <a href="#" class="text-blue-300 hover:text-white">Mentions légales</a> | 
+                <a href="#" class="text-blue-300 hover:text-white">Politique de confidentialité</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Data structures with extended vocabulary
+        const vocabularyData = {
+            famille: {
+                icon: '👨‍👩‍👧‍👦',
+                words: ['père', 'mère', 'fils', 'fille', 'frère', 'sœur', 'grand-père', 'grand-mère', 'oncle', 'tante', 'cousin', 'cousine', 'neveu', 'nièce', 'beau-père', 'belle-mère', 'gendre', 'bru', 'parrain', 'marraine', 'filleul', 'filleule', 'époux', 'épouse', 'mari', 'femme', 'enfant', 'bébé', 'adolescent', 'adulte', 'ancêtre', 'descendant', 'jumeau', 'jumeaux', 'famille', 'foyer', 'maison', 'domicile', 'lignée', 'génération', 'parenté', 'alliance', 'héritage', 'tradition', 'adoption', 'tuteur', 'pupille', 'orphelin', 'veuf', 'veuve', 'célibataire', 'divorcé', 'remarié', 'beaux-parents', 'belle-sœur', 'beau-frère', 'petits-enfants', 'arrière-grand-père', 'arrière-grand-mère', 'bisaïeul', 'trisaïeul', 'descendance', 'ascendance', 'fratrie', 'aîné', 'cadet', 'benjamin', 'nouveau-né', 'nourrisson', 'bambin', 'gamin', 'adolescence', 'maturité', 'vieillesse']
+            },
+            maison: {
+                icon: '🏠',
+                words: ['salon', 'cuisine', 'chambre', 'salle de bain', 'garage', 'jardin', 'balcon', 'terrasse', 'cave', 'grenier', 'couloir', 'escalier', 'porte', 'fenêtre', 'mur', 'plafond', 'sol', 'toit', 'cheminée', 'radiateur', 'climatisation', 'électricité', 'plomberie', 'chauffage', 'isolation', 'décoration', 'mobilier', 'canapé', 'fauteuil', 'table', 'chaise', 'lit', 'armoire', 'commode', 'étagère', 'bureau', 'bibliothèque', 'télévision', 'ordinateur', 'réfrigérateur', 'four', 'micro-onde', 'lave-vaisselle', 'lave-linge', 'aspirateur', 'fer à repasser', 'réveil', 'lampe', 'rideau', 'tapis', 'coussin', 'couverture', 'oreiller', 'drap', 'serviette', 'miroir', 'tableau', 'plante', 'vase', 'horloge', 'vestibule', 'entrée', 'hall', 'antichambre', 'dressing', 'placard', 'penderie', 'buanderie', 'cellier', 'garde-manger', 'office', 'véranda', 'bow-window', 'mansarde', 'sous-sol', 'combles', 'mezzanine', 'palier', 'perron', 'seuil', 'linteau', 'chambranle', 'serrure', 'poignée', 'verrou', 'paillasson', 'store', 'volet', 'persienne', 'gouttière', 'lucarne', 'charpente', 'poutre', 'solive', 'cloison', 'papier peint', 'carrelage', 'parquet', 'moquette', 'linoléum', 'plinthe', 'corniche', 'moulure', 'interrupteur', 'prise', 'disjoncteur', 'compteur', 'robinet', 'évier', 'lavabo', 'douche', 'baignoire', 'WC', 'bidet', 'sèche-cheveux', 'brosse à dents', 'savon', 'shampoing', 'dentifrice', 'rasoir', 'parfum', 'déodorant', 'crème', 'lotion']
+            },
+            nourriture: {
+                icon: '🍽️',
+                words: ['pain', 'fromage', 'lait', 'œuf', 'beurre', 'yaourt', 'viande', 'poisson', 'poulet', 'bœuf', 'porc', 'agneau', 'jambon', 'saucisson', 'pâte', 'riz', 'pomme de terre', 'légume', 'fruit', 'salade', 'tomate', 'carotte', 'oignon', 'ail', 'persil', 'basilic', 'thym', 'romarin', 'sel', 'poivre', 'sucre', 'miel', 'confiture', 'chocolat', 'gâteau', 'biscuit', 'bonbon', 'glace', 'eau', 'jus', 'café', 'thé', 'vin', 'bière', 'soda', 'restaurant', 'menu', 'entrée', 'plat', 'dessert', 'addition', 'pourboire', 'serveur', 'chef', 'cuisine', 'recette', 'ingrédient', 'cuisson', 'assaisonnement', 'déjeuner', 'dîner', 'petit-déjeuner', 'goûter', 'repas', 'faim', 'soif', 'appétit', 'saveur', 'goût', 'délicieux', 'excellent', 'bon', 'mauvais', 'épicé', 'sucré', 'salé', 'amer', 'acide', 'frais', 'chaud', 'froid', 'cru', 'cuit', 'baguette', 'croissant', 'brioche', 'viennoiserie', 'pâtisserie', 'tarte', 'flan', 'éclair', 'chou', 'macaron', 'madeleine', 'financier', 'sablé', 'pain de mie', 'biscottes', 'céréales', 'müesli', 'granola', 'flocons d\'avoine', 'cornflakes', 'crème fraîche', 'lait concentré', 'lait en poudre', 'fromage blanc', 'ricotta', 'mascarpone', 'roquefort', 'camembert', 'brie', 'chèvre', 'gruyère', 'emmental', 'comté', 'parmesan', 'mozzarella', 'feta', 'cottage', 'cheddar', 'saumon', 'thon', 'sardine', 'maquereau', 'sole', 'cabillaud', 'colin', 'daurade', 'bar', 'truite', 'crevette', 'homard', 'crabe', 'moule', 'huître', 'coquille Saint-Jacques', 'calmar', 'seiche', 'poulpe', 'veau', 'lapin', 'canard', 'oie', 'dinde', 'pintade', 'caille', 'faisan', 'sanglier', 'cerf', 'chevreuil', 'bacon', 'lardons', 'chorizo', 'merguez', 'chipolata', 'boudin', 'pâté', 'rillettes', 'foie gras', 'caviar', 'tarama']
+            },
+            transport: {
+                icon: '🚗',
+                words: ['voiture', 'bus', 'train', 'métro', 'tramway', 'avion', 'bateau', 'vélo', 'moto', 'scooter', 'taxi', 'camion', 'autocar', 'ambulance', 'pompiers', 'police', 'route', 'rue', 'avenue', 'boulevard', 'autoroute', 'pont', 'tunnel', 'carrefour', 'rond-point', 'feu', 'panneau', 'parking', 'garage', 'station-service', 'gare', 'aéroport', 'port', 'arrêt', 'ticket', 'billet', 'abonnement', 'voyage', 'destination', 'départ', 'arrivée', 'horaire', 'retard', 'avance', 'conducteur', 'passager', 'pilote', 'capitaine', 'mécanicien', 'péage', 'essence', 'diesel', 'électrique', 'hybride']
+            },
+            metiers: {
+                icon: '💼',
+                words: ['médecin', 'infirmier', 'professeur', 'avocat', 'ingénieur', 'architecte', 'comptable', 'vendeur', 'cuisinier', 'boulanger', 'mécanicien', 'électricien', 'plombier', 'jardinier', 'coiffeur', 'dentiste', 'vétérinaire', 'pharmacien', 'pompier', 'policier', 'militaire', 'juge', 'notaire', 'banquier', 'assureur', 'journaliste', 'écrivain', 'artiste', 'musicien', 'acteur', 'danseur', 'chanteur', 'photographe', 'cameraman', 'réalisateur', 'producteur', 'éditeur', 'traducteur', 'interprète', 'guide', 'agent', 'directeur', 'manager', 'secrétaire', 'assistant', 'technicien', 'ouvrier', 'artisan', 'commerçant', 'entrepreneur', 'patron', 'employé', 'stagiaire', 'apprenti', 'étudiant', 'chercheur', 'scientifique', 'chimiste', 'biologiste', 'physicien', 'mathématicien', 'informaticien', 'programmeur', 'designer', 'graphiste', 'webmaster', 'consultant', 'formateur', 'coach', 'thérapeute', 'psychologue', 'psychiatre', 'kinésithérapeute', 'orthophoniste', 'sage-femme', 'ambulancier']
+            },
+            emotions: {
+                icon: '😊',
+                words: ['joie', 'bonheur', 'tristesse', 'colère', 'peur', 'surprise', 'dégoût', 'amour', 'haine', 'jalousie', 'envie', 'fierté', 'honte', 'culpabilité', 'regret', 'nostalgie', 'mélancolie', 'euphorie', 'extase', 'sérénité', 'paix', 'calme', 'stress', 'anxiété', 'angoisse', 'panic', 'terreur', 'effroi', 'crainte', 'inquiétude', 'soulagement', 'espoir', 'désespoir', 'optimisme', 'pessimisme', 'confiance', 'méfiance', 'doute', 'certitude', 'confusion', 'clarté', 'fascination', 'ennui', 'excitation', 'enthousiasme', 'passion', 'indifférence', 'admiration', 'mépris']
+            },
+            nature: {
+                icon: '🌳',
+                words: ['arbre', 'forêt', 'fleur', 'herbe', 'feuille', 'branche', 'racine', 'tronc', 'écorce', 'sève', 'fruit', 'graine', 'pollen', 'nectar', 'rosée', 'pluie', 'neige', 'grêle', 'brouillard', 'nuage', 'soleil', 'lune', 'étoile', 'ciel', 'horizon', 'montagne', 'colline', 'vallée', 'plaine', 'plateau', 'rivière', 'fleuve', 'lac', 'étang', 'mer', 'océan', 'vague', 'marée', 'courant', 'source', 'cascade', 'chute', 'grotte', 'caverne', 'rocher', 'pierre', 'sable', 'terre', 'sol', 'humus', 'vent', 'brise', 'tempête', 'orage', 'tonnerre', 'éclair', 'foudre', 'arc-en-ciel', 'saison', 'printemps', 'été', 'automne', 'hiver', 'chaleur', 'froid', 'température', 'climat', 'météo', 'animal', 'oiseau', 'poisson', 'insecte', 'mammifère', 'reptile', 'amphibien', 'écosystème', 'biodiversité', 'environnement', 'nature', 'naturel', 'sauvage', 'domestique', 'protection', 'conservation', 'pollution', 'écologie', 'durable', 'renouvelable', 'recyclage', 'compost', 'bio', 'organique', 'chêne', 'pin', 'sapin', 'bouleau', 'érable', 'tilleul', 'platane', 'peuplier', 'saule', 'noisetier', 'châtaignier', 'marronnier', 'olivier', 'cyprès', 'cèdre', 'sequoia', 'baobab', 'palmier']
+            },
+            sports: {
+                icon: '⚽',
+                words: ['football', 'tennis', 'basketball', 'volleyball', 'handball', 'rugby', 'natation', 'course', 'cyclisme', 'ski', 'snowboard', 'patinage', 'hockey', 'golf', 'baseball', 'badminton', 'ping-pong', 'squash', 'boxe', 'judo', 'karaté', 'taekwondo', 'escrime', 'tir', 'archery', 'équitation', 'voile', 'surf', 'plongée', 'escalade', 'alpinisme', 'randonnée', 'jogging', 'marathon', 'sprint', 'saut', 'lancer', 'gymnastique', 'athlétisme', 'musculation', 'fitness', 'yoga', 'pilates', 'danse', 'ballon', 'raquette', 'batte', 'club', 'stade', 'terrain', 'piscine', 'piste', 'court', 'ring', 'équipe', 'joueur', 'athlète', 'entraîneur', 'arbitre', 'supporter', 'victoire', 'défaite', 'match', 'compétition', 'championnat', 'tournoi', 'coupe', 'médaille', 'trophée', 'record', 'performance', 'score', 'point', 'but', 'panier', 'essai', 'set', 'manche', 'round', 'période', 'mi-temps', 'prolongation', 'penalty', 'faute', 'carton', 'hors-jeu', 'remplaçant', 'titulaire', 'capitaine', 'gardien', 'aviron', 'canoë', 'kayak', 'water-polo', 'triathlon', 'pentathlon', 'décathlon', 'heptathlon']
+            }
+        };
+
+        const conjugationQuestions = [
+            { question: "Conjuguez 'manger' au présent avec 'je'", options: ["mange", "manges", "mangent"], answer: "mange", explanation: "Au présent, 'je' se conjugue sans 's' pour les verbes du 1er groupe" },
+            { question: "Conjuguez 'aller' au présent avec 'tu'", options: ["vas", "va", "allons"], answer: "vas", explanation: "'Aller' est un verbe irrégulier. Avec 'tu', on dit 'tu vas'" },
+            { question: "Conjuguez 'être' au présent avec 'il'", options: ["est", "es", "suis"], answer: "est", explanation: "'Être' est irrégulier. Avec 'il/elle', on dit 'il est'" },
+            { question: "Conjuguez 'avoir' au présent avec 'nous'", options: ["avons", "avez", "ont"], answer: "avons", explanation: "Avec 'nous', 'avoir' devient 'nous avons'" },
+            { question: "Conjuguez 'faire' au présent avec 'ils'", options: ["font", "fait", "faisons"], answer: "font", explanation: "Avec 'ils/elles', 'faire' devient 'ils font'" },
+            { question: "Conjuguez 'finir' au présent avec 'vous'", options: ["finissez", "finissent", "finis"], answer: "finissez", explanation: "Les verbes du 2e groupe prennent '-issez' avec 'vous'" },
+            { question: "Conjuguez 'venir' au présent avec 'je'", options: ["viens", "vient", "venons"], answer: "viens", explanation: "'Venir' est irrégulier. Avec 'je', on dit 'je viens'" },
+            { question: "Conjuguez 'prendre' au présent avec 'elle'", options: ["prend", "prends", "prenons"], answer: "prend", explanation: "Avec 'il/elle', 'prendre' devient 'elle prend' (sans 's')" },
+            { question: "Conjuguez 'pouvoir' au présent avec 'tu'", options: ["peux", "peut", "pouvons"], answer: "peux", explanation: "'Pouvoir' est irrégulier. Avec 'tu', on dit 'tu peux'" },
+            { question: "Conjuguez 'dire' au présent avec 'nous'", options: ["disons", "disez", "disent"], answer: "disons", explanation: "Avec 'nous', 'dire' devient 'nous disons'" },
+            { question: "Conjuguez 'savoir' au passé composé avec 'j''", options: ["j'ai su", "j'ai sait", "j'ai savoir"], answer: "j'ai su", explanation: "Le participe passé de 'savoir' est 'su'" },
+            { question: "Conjuguez 'venir' au passé composé avec 'il'", options: ["il est venu", "il a venu", "il vient"], answer: "il est venu", explanation: "'Venir' se conjugue avec l'auxiliaire 'être'" },
+            { question: "Conjuguez 'manger' au futur avec 'je'", options: ["mangerai", "mangerais", "mange"], answer: "mangerai", explanation: "Au futur, on ajoute '-ai' à l'infinitif pour 'je'" },
+            { question: "Conjuguez 'être' à l'imparfait avec 'nous'", options: ["étions", "sommes", "serons"], answer: "étions", explanation: "À l'imparfait, 'être' avec 'nous' donne 'nous étions'" },
+            { question: "Conjuguez 'avoir' au conditionnel avec 'tu'", options: ["aurais", "auras", "avais"], answer: "aurais", explanation: "Au conditionnel, 'avoir' avec 'tu' donne 'tu aurais'" }
+        ];
+
+        const orthographyWords = {
+            "100-most-common": [
+                {word: "le", definition: "Article défini masculin singulier"},
+                {word: "de", definition: "Préposition marquant l'origine, la possession"},
+                {word: "un", definition: "Article indéfini masculin singulier"},
+                {word: "à", definition: "Préposition marquant le lieu, le temps"},
+                {word: "être", definition: "Verbe d'état fondamental"},
+                {word: "et", definition: "Conjonction de coordination"},
+                {word: "en", definition: "Préposition de lieu ou de temps"},
+                {word: "avoir", definition: "Verbe d'action fondamental"},
+                {word: "que", definition: "Pronom relatif ou conjonction"},
+                {word: "pour", definition: "Préposition marquant le but"},
+                {word: "dans", definition: "Préposition de lieu"},
+                {word: "ce", definition: "Déterminant ou pronom démonstratif"},
+                {word: "il", definition: "Pronom personnel masculin"},
+                {word: "une", definition: "Article indéfini féminin singulier"},
+                {word: "sur", definition: "Préposition de lieu"},
+                {word: "avec", definition: "Préposition d'accompagnement"},
+                {word: "ne", definition: "Adverbe de négation"},
+                {word: "se", definition: "Pronom personnel réfléchi"},
+                {word: "pas", definition: "Adverbe de négation"},
+                {word: "tout", definition: "Déterminant ou pronom indéfini"},
+                {word: "plus", definition: "Adverbe de quantité"},
+                {word: "par", definition: "Préposition d'agent ou de moyen"},
+                {word: "grand", definition: "Adjectif qualificatif"},
+                {word: "comme", definition: "Adverbe de comparaison"},
+                {word: "autre", definition: "Adjectif ou pronom indéfini"}
+            ],
+            verbs: [
+                {word: "manger", definition: "Absorber de la nourriture"},
+                {word: "boire", definition: "Absorber un liquide"},
+                {word: "dormir", definition: "Se reposer en fermant les yeux"},
+                {word: "marcher", definition: "Se déplacer à pied"},
+                {word: "courir", definition: "Se déplacer rapidement"},
+                {word: "sauter", definition: "S'élever en l'air"},
+                {word: "regarder", definition: "Diriger ses yeux vers"},
+                {word: "écouter", definition: "Prêter attention aux sons"},
+                {word: "parler", definition: "S'exprimer par la parole"},
+                {word: "chanter", definition: "Produire des sons mélodieux"},
+                {word: "danser", definition: "Bouger en rythme"},
+                {word: "jouer", definition: "S'amuser, pratiquer un jeu"},
+                {word: "travailler", definition: "Exercer une activité professionnelle"},
+                {word: "étudier", definition: "Apprendre, réviser"},
+                {word: "lire", definition: "Déchiffrer un texte"},
+                {word: "écrire", definition: "Tracer des lettres, des mots"},
+                {word: "dessiner", definition: "Créer une image"},
+                {word: "peindre", definition: "Appliquer de la couleur"},
+                {word: "construire", definition: "Édifier, bâtir"},
+                {word: "détruire", definition: "Démolir, anéantir"}
+            ],
+            adjectives: [
+                {word: "beau", definition: "Qui plaît à l'œil"},
+                {word: "grand", definition: "De taille importante"},
+                {word: "petit", definition: "De petite taille"},
+                {word: "bon", definition: "De bonne qualité"},
+                {word: "mauvais", definition: "De mauvaise qualité"},
+                {word: "nouveau", definition: "Récent, qui vient d'apparaître"},
+                {word: "vieux", definition: "Âgé, ancien"},
+                {word: "jeune", definition: "De peu d'âge"},
+                {word: "heureux", definition: "Qui éprouve du bonheur"},
+                {word: "triste", definition: "Qui éprouve de la tristesse"},
+                {word: "intelligent", definition: "Doué de raison"},
+                {word: "stupide", definition: "Qui manque d'intelligence"},
+                {word: "fort", definition: "Qui a de la force"},
+                {word: "faible", definition: "Qui manque de force"},
+                {word: "rapide", definition: "Qui va vite"},
+                {word: "lent", definition: "Qui va doucement"},
+                {word: "chaud", definition: "De température élevée"},
+                {word: "froid", definition: "De basse température"},
+                {word: "doux", definition: "Agréable au toucher"},
+                {word: "dur", definition: "Qui résiste à la pression"}
+            ],
+            difficult: [
+                {word: "yaourt", definition: "Produit laitier fermenté"},
+                {word: "rythme", definition: "Cadence, tempo"},
+                {word: "symptôme", definition: "Signe d'une maladie"},
+                {word: "parallèle", definition: "Qui ne se rencontre jamais"},
+                {word: "développement", definition: "Action de développer"},
+                {word: "événement", definition: "Ce qui arrive"},
+                {word: "différent", definition: "Qui n'est pas semblable"},
+                {word: "caractère", definition: "Trait distinctif"},
+                {word: "mystère", definition: "Ce qui est inexpliqué"},
+                {word: "théâtre", definition: "Art dramatique"},
+                {word: "bibliothèque", definition: "Lieu où sont conservés les livres"},
+                {word: "orthographe", definition: "Manière d'écrire les mots"},
+                {word: "philosophie", definition: "Recherche de la sagesse"},
+                {word: "psychologie", definition: "Étude de l'esprit"},
+                {word: "géographie", definition: "Science de la Terre"},
+                {word: "mathématiques", definition: "Science des nombres"},
+                {word: "gymnastique", definition: "Exercices corporels"},
+                {word: "pneumatique", definition: "Relatif à l'air comprimé"},
+                {word: "xylophone", definition: "Instrument de musique"},
+                {word: "chrysanthème", definition: "Fleur d'automne"}
+            ]
+        };
+
+        const grammarRules = {
+            accents: {
+                title: "Les Accents en Français",
+                explanation: "Les accents modifient la prononciation et parfois le sens des mots.",
+                rules: [
+                    "L'accent aigu (é) : se place sur le 'e' fermé (café, été)",
+                    "L'accent grave (è) : se place sur le 'e' ouvert (mère, très)",
+                    "L'accent circonflexe (ê) : remplace souvent une lettre disparue (forêt, hôpital)",
+                    "Le tréma (ë) : sépare deux voyelles (Noël, naïf)"
+                ],
+                exercises: [
+                    {question: "Quel accent pour 'caf_' ?", options: ["é", "è", "ê"], answer: "é"},
+                    {question: "Quel accent pour 'm_re' ?", options: ["é", "è", "ê"], answer: "è"},
+                    {question: "Quel accent pour 'for_t' ?", options: ["é", "è", "ê"], answer: "ê"}
+                ]
+            },
+            homophones: {
+                title: "Les Homophones",
+                explanation: "Mots qui se prononcent de la même façon mais s'écrivent différemment.",
+                rules: [
+                    "à (préposition) / a (verbe avoir) : 'Il a un chat' / 'Il va à l'école'",
+                    "et (conjonction) / est (verbe être) : 'Paul et Marie' / 'Il est grand'",
+                    "son (possessif) / sont (verbe être) : 'Son livre' / 'Ils sont là'",
+                    "ou (choix) / où (lieu) : 'Thé ou café ?' / 'Où vas-tu ?'"
+                ],
+                exercises: [
+                    {question: "Il _ un chien", options: ["a", "à"], answer: "a"},
+                    {question: "Marie _ Pierre", options: ["et", "est"], answer: "et"},
+                    {question: "Ils _ partis", options: ["son", "sont"], answer: "sont"}
+                ]
+            },
+            plurals: {
+                title: "Les Pluriels",
+                explanation: "Formation du pluriel des noms et adjectifs.",
+                rules: [
+                    "Règle générale : ajouter -s (chat → chats)",
+                    "Mots en -eau, -au, -eu : ajouter -x (bateau → bateaux)",
+                    "Mots en -al : -al devient -aux (cheval → chevaux)",
+                    "Exceptions : pneu → pneus, bleu → bleus"
+                ],
+                exercises: [
+                    {question: "Pluriel de 'chat'", options: ["chats", "chatx", "chat"], answer: "chats"},
+                    {question: "Pluriel de 'bateau'", options: ["bateaus", "bateaux", "bateau"], answer: "bateaux"},
+                    {question: "Pluriel de 'cheval'", options: ["chevals", "chevaux", "chevales"], answer: "chevaux"}
+                ]
+            },
+            agreements: {
+                title: "Les Accords",
+                explanation: "Règles d'accord du participe passé.",
+                rules: [
+                    "Avec être : accord avec le sujet (Elle est partie)",
+                    "Avec avoir : pas d'accord sauf si COD placé avant",
+                    "COD avant le verbe : accord (Les fleurs qu'il a cueillies)",
+                    "Verbes pronominaux : règles particulières"
+                ],
+                exercises: [
+                    {question: "Elle est parti_", options: ["e", "", "es"], answer: "e"},
+                    {question: "Ils ont mang_", options: ["é", "és", "ées"], answer: "é"},
+                    {question: "Les pommes qu'il a mang_", options: ["é", "ées", "és"], answer: "ées"}
+                ]
+            }
+        };
+
+        // State management
+        let currentQuiz = null;
+        let currentQuestionIndex = 0;
+        let quizScore = 0;
+        let quizAnswers = [];
+        let isListening = false;
+
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-slide-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section-container, .card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Quiz functions
+        function startAdaptiveQuiz() {
+            const quizContainer = document.getElementById('adaptive-quiz');
+            quizContainer.classList.remove('hidden');
+            currentQuiz = 'adaptive';
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            quizAnswers = [];
+            loadNextQuestion();
+        }
+
+        function loadNextQuestion() {
+            if (currentQuestionIndex >= conjugationQuestions.length) {
+                showQuizResults();
+                return;
+            }
+
+            const question = conjugationQuestions[currentQuestionIndex];
+            document.getElementById('quiz-question').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach(option => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'quiz-option';
+                optionElement.textContent = option;
+                optionElement.onclick = () => selectQuizOption(optionElement, option);
+                optionsContainer.appendChild(optionElement);
+            });
+
+            updateQuizProgress();
+        }
+
+        function selectQuizOption(element, option) {
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            element.dataset.selected = option;
+        }
+
+        function checkAnswer() {
+            const selectedOption = document.querySelector('.quiz-option.selected');
+            if (!selectedOption) {
+                showFeedback("Veuillez sélectionner une réponse.", "warning");
+                return;
+            }
+
+            const question = conjugationQuestions[currentQuestionIndex];
+            const userAnswer = selectedOption.dataset.selected;
+            const isCorrect = userAnswer === question.answer;
+            
+            if (isCorrect) {
+                quizScore++;
+                showFeedback(`✅ Correct ! ${question.explanation}`, "success");
+            } else {
+                showFeedback(`❌ Incorrect. ${question.explanation}`, "error");
+            }
+
+            quizAnswers.push({
+                question: question.question,
+                userAnswer,
+                correctAnswer: question.answer,
+                isCorrect
+            });
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadNextQuestion();
+            }, 3000);
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < conjugationQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadNextQuestion();
+            }
+        }
+
+        function updateQuizProgress() {
+            const progress = ((currentQuestionIndex + 1) / conjugationQuestions.length) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            document.getElementById('quiz-score').textContent = `${quizScore}/${currentQuestionIndex + 1}`;
+        }
+
+        function showQuizResults() {
+            const percentage = Math.round((quizScore / conjugationQuestions.length) * 100);
+            let message = `Quiz terminé ! Score : ${quizScore}/${conjugationQuestions.length} (${percentage}%)`;
+            
+            if (percentage >= 80) {
+                message += " 🎉 Excellent travail !";
+            } else if (percentage >= 60) {
+                message += " 👍 Bon travail !";
+            } else {
+                message += " 💪 Continuez à vous entraîner !";
+            }
+
+            showFeedback(message, "info");
+            updatePerformanceChart();
+        }
+
+        function updatePerformanceChart() {
+            const ctx = document.getElementById('performance-chart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Bonnes réponses', 'Mauvaises réponses'],
+                        datasets: [{
+                            data: [quizScore, conjugationQuestions.length - quizScore],
+                            backgroundColor: ['#4ade80', '#f87171']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function practiceTense(tense) {
+            const practiceContainer = document.getElementById('tense-practice');
+            const explanationContainer = document.getElementById('tense-explanation');
+            const exercisesContainer = document.getElementById('tense-exercises');
+            
+            const tenseData = {
+                'present': {
+                    title: 'Le Présent de l\'Indicatif',
+                    explanation: 'Le présent exprime une action qui se déroule au moment où l\'on parle, une vérité générale ou une habitude.',
+                    examples: ['Je mange une pomme.', 'Il fait beau.', 'Nous habitons à Paris.'],
+                    exercises: [
+                        {verb: 'parler', pronoun: 'tu', answer: 'parles'},
+                        {verb: 'finir', pronoun: 'elle', answer: 'finit'},
+                        {verb: 'prendre', pronoun: 'nous', answer: 'prenons'}
+                    ]
+                },
+                'passé-composé': {
+                    title: 'Le Passé Composé',
+                    explanation: 'Le passé composé exprime une action accomplie dans le passé. Il se forme avec l\'auxiliaire être ou avoir + participe passé.',
+                    examples: ['J\'ai mangé hier.', 'Elle est partie tôt.', 'Nous avons fini le travail.'],
+                    exercises: [
+                        {verb: 'manger', pronoun: 'j\'', answer: 'ai mangé'},
+                        {verb: 'aller', pronoun: 'il', answer: 'est allé'},
+                        {verb: 'voir', pronoun: 'vous', answer: 'avez vu'}
+                    ]
+                },
+                'imparfait': {
+                    title: 'L\'Imparfait',
+                    explanation: 'L\'imparfait exprime une action habituelle dans le passé ou qui était en cours d\'accomplissement.',
+                    examples: ['Je mangeais souvent des bonbons.', 'Il pleuvait ce jour-là.', 'Nous étions heureux.'],
+                    exercises: [
+                        {verb: 'jouer', pronoun: 'je', answer: 'jouais'},
+                        {verb: 'être', pronoun: 'tu', answer: 'étais'},
+                        {verb: 'avoir', pronoun: 'ils', answer: 'avaient'}
+                    ]
+                },
+                'futur': {
+                    title: 'Le Futur Simple',
+                    explanation: 'Le futur simple exprime une action qui aura lieu dans l\'avenir.',
+                    examples: ['Je mangerai demain.', 'Il viendra nous voir.', 'Nous partirons en vacances.'],
+                    exercises: [
+                        {verb: 'chanter', pronoun: 'elle', answer: 'chantera'},
+                        {verb: 'venir', pronoun: 'nous', answer: 'viendrons'},
+                        {verb: 'pouvoir', pronoun: 'vous', answer: 'pourrez'}
+                    ]
+                }
+            };
+
+            const data = tenseData[tense];
+            if (!data) return;
+
+            explanationContainer.innerHTML = `
+                <h4 class="font-bold text-lg mb-2">${data.title}</h4>
+                <p class="mb-3">${data.explanation}</p>
+                <div class="mb-3">
+                    <strong>Exemples :</strong>
+                    <ul class="list-disc list-inside ml-4">
+                        ${data.examples.map(ex => `<li>${ex}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            exercisesContainer.innerHTML = `
+                <h5 class="font-bold mb-3">Exercices pratiques :</h5>
+                <div id="tense-current-exercise" class="mb-4"></div>
+                <button class="btn btn-primary mr-2" onclick="checkTenseAnswer()">Vérifier</button>
+                <button class="btn btn-info" onclick="nextTenseExercise()">Suivant</button>
+                <div id="tense-feedback" class="mt-4"></div>
+            `;
+
+            window.currentTenseExercises = data.exercises;
+            window.currentTenseIndex = 0;
+            loadTenseExercise();
+            
+            practiceContainer.classList.remove('hidden');
+            practiceContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadTenseExercise() {
+            if (!window.currentTenseExercises || window.currentTenseIndex >= window.currentTenseExercises.length) {
+                document.getElementById('tense-current-exercise').innerHTML = '<p class="text-green-600 font-bold">🎉 Félicitations ! Vous avez terminé tous les exercices !</p>';
+                return;
+            }
+
+            const exercise = window.currentTenseExercises[window.currentTenseIndex];
+            document.getElementById('tense-current-exercise').innerHTML = `
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <p class="mb-3">Conjuguez le verbe <strong>"${exercise.verb}"</strong> avec <strong>"${exercise.pronoun}"</strong> :</p>
+                    <input type="text" id="tense-answer" class="w-full p-2 text-base border rounded-lg" placeholder="Votre réponse...">
+                </div>
+            `;
+        }
+
+        function checkTenseAnswer() {
+            const input = document.getElementById('tense-answer');
+            const userAnswer = input.value.trim().toLowerCase();
+            const exercise = window.currentTenseExercises[window.currentTenseIndex];
+            const correctAnswer = exercise.answer.toLowerCase();
+
+            const feedback = document.getElementById('tense-feedback');
+            if (userAnswer === correctAnswer) {
+                feedback.innerHTML = '<p class="text-green-600 font-bold">✅ Excellent ! Bonne réponse.</p>';
+                feedback.className = 'mt-4 p-3 bg-green-50 rounded-lg';
+            } else {
+                feedback.innerHTML = `<p class="text-red-600 font-bold">❌ Incorrect. La bonne réponse est : <strong>${exercise.answer}</strong></p>`;
+                feedback.className = 'mt-4 p-3 bg-red-50 rounded-lg';
+            }
+        }
+
+        function nextTenseExercise() {
+            window.currentTenseIndex++;
+            loadTenseExercise();
+            document.getElementById('tense-feedback').innerHTML = '';
+        }
+
+        // Voice recognition functions
+        function startListening() {
+            if (isListening) return;
+            
+            const wordElement = document.getElementById('word-to-pronounce');
+            const feedbackElement = document.getElementById('voice-feedback');
+            const voiceBtn = document.getElementById('voice-btn');
+            
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showFeedback("La reconnaissance vocale n'est pas supportée par votre navigateur.", "error");
+                return;
+            }
+
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'fr-FR';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            isListening = true;
+            voiceBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Arrêter';
+            voiceBtn.classList.remove('btn-danger');
+            voiceBtn.classList.add('btn-warning');
+            feedbackElement.innerHTML = '🎤 Parlez maintenant...';
+
+            recognition.start();
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.trim().toLowerCase();
+                const expected = wordElement.textContent.toLowerCase();
+                const confidence = event.results[0][0].confidence;
+
+                if (transcript === expected) {
+                    feedbackElement.innerHTML = `✅ Parfait ! Vous avez dit "${transcript}" (Confiance: ${Math.round(confidence * 100)}%)`;
+                    feedbackElement.className = 'text-green-600 font-bold';
+                } else {
+                    feedbackElement.innerHTML = `❌ Vous avez dit "${transcript}". Essayez de prononcer "${expected}"`;
+                    feedbackElement.className = 'text-red-600 font-bold';
+                    showPronunciationTips(expected);
+                }
+                
+                resetVoiceButton();
+            };
+
+            recognition.onerror = (event) => {
+                feedbackElement.innerHTML = '❌ Erreur de reconnaissance. Veuillez réessayer.';
+                feedbackElement.className = 'text-red-600 font-bold';
+                resetVoiceButton();
+            };
+
+            recognition.onend = () => {
+                resetVoiceButton();
+            };
+        }
+
+        function resetVoiceButton() {
+            isListening = false;
+            const voiceBtn = document.getElementById('voice-btn');
+            voiceBtn.innerHTML = '<i class="fas fa-microphone mr-2"></i>Enregistrer';
+            voiceBtn.classList.remove('btn-warning');
+            voiceBtn.classList.add('btn-danger');
+        }
+
+        function showPronunciationTips(word) {
+            const tipsContainer = document.getElementById('pronunciation-tips');
+            const tipContent = document.getElementById('tip-content');
+            
+            const tips = {
+                'je mange': 'Prononcez "jeu man-je" avec un "j" doux et un "g" comme dans "garage"',
+                'tu vas': 'Prononcez "tu va" - le "s" ne se prononce pas à la fin',
+                'il est': 'Prononcez "i-lè" en liant les deux mots'
+            };
+
+            if (tips[word]) {
+                tipContent.textContent = tips[word];
+                tipsContainer.classList.remove('hidden');
+            }
+        }
+
+        function generateRandomWordToPronounce() {
+            const commonWords = ['je mange', 'tu vas', 'il est', 'nous avons', 'vous êtes', 'ils font', 'elle parle', 'on dit', 'je suis', 'tu fais'];
+            const randomWord = commonWords[Math.floor(Math.random() * commonWords.length)];
+            document.getElementById('word-to-pronounce').textContent = randomWord;
+        }
+
+        // Dictation functions
+        function startDictation() {
+            document.getElementById('dictation-exercise').classList.remove('hidden');
+            const sentences = [
+                "Le chat mange sa nourriture.",
+                "Les enfants jouent dans le jardin.",
+                "Ma mère prépare le dîner.",
+                "Nous allons à l'école en bus.",
+                "Il fait beau aujourd'hui.",
+                "La voiture rouge roule vite.",
+                "Je lis un livre intéressant.",
+                "Elle chante une belle chanson.",
+                "Nous étudions le français.",
+                "Ils habitent près de la mer."
+            ];
+            window.currentDictationSentence = sentences[Math.floor(Math.random() * sentences.length)];
+            setupDictationAudio();
+        }
+
+        function setupDictationAudio() {
+            document.getElementById('play-audio').onclick = () => {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(window.currentDictationSentence);
+                    utterance.lang = 'fr-FR';
+                    utterance.rate = 0.9;
+                    speechSynthesis.speak(utterance);
+                }
+            };
+        }
+
+        function playSlowly() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(window.currentDictationSentence);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.6;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function checkDictation() {
+            const userText = document.getElementById('dictation-text').value.trim();
+            const correctText = window.currentDictationSentence;
+            const feedback = document.getElementById('dictation-feedback');
+            
+            if (userText.toLowerCase() === correctText.toLowerCase()) {
+                feedback.innerHTML = '<p class="text-green-600 font-bold">✅ Parfait ! Dictée réussie.</p>';
+                feedback.className = 'mt-4 p-3 bg-green-50 rounded-lg';
+            } else {
+                const errors = findDictationErrors(userText, correctText);
+                feedback.innerHTML = `
+                    <p class="text-red-600 font-bold">❌ Quelques erreurs détectées :</p>
+                    <p class="mt-2"><strong>Votre texte :</strong> ${userText}</p>
+                    <p><strong>Texte correct :</strong> ${correctText}</p>
+                    <div class="mt-2">${errors}</div>
+                `;
+                feedback.className = 'mt-4 p-3 bg-red-50 rounded-lg';
+            }
+        }
+
+        function findDictationErrors(userText, correctText) {
+            const userWords = userText.toLowerCase().split(' ');
+            const correctWords = correctText.toLowerCase().split(' ');
+            const errors = [];
+            
+            for (let i = 0; i < Math.max(userWords.length, correctWords.length); i++) {
+                if (userWords[i] !== correctWords[i]) {
+                    errors.push(`Mot ${i + 1}: "${userWords[i] || 'manquant'}" → "${correctWords[i] || 'en trop'}"`);
+                }
+            }
+            
+            return errors.length > 0 ? errors.slice(0, 3).join('<br>') : 'Erreurs mineures de ponctuation ou d\'espacement.';
+        }
+
+        // Orthography functions
+        function practiceWordCategory(category) {
+            const words = orthographyWords[category];
+            if (!words) return;
+
+            const practiceContainer = document.getElementById('word-practice');
+            window.currentWordCategory = words;
+            window.currentWordIndex = 0;
+            
+            loadWordChallenge();
+            practiceContainer.classList.remove('hidden');
+            practiceContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadWordChallenge() {
+            if (!window.currentWordCategory || window.currentWordIndex >= window.currentWordCategory.length) {
+                document.getElementById('word-challenge').innerHTML = '<p class="text-green-600 font-bold">🎉 Bravo ! Vous avez terminé cette catégorie !</p>';
+                return;
+            }
+
+            const word = window.currentWordCategory[window.currentWordIndex];
+            document.getElementById('word-definition').textContent = word.definition;
+            document.getElementById('word-input').value = '';
+            document.getElementById('word-feedback').innerHTML = '';
+        }
+
+        function checkWord() {
+            const input = document.getElementById('word-input');
+            const userAnswer = input.value.trim().toLowerCase();
+            const word = window.currentWordCategory[window.currentWordIndex];
+            const correctAnswer = word.word.toLowerCase();
+
+            const feedback = document.getElementById('word-feedback');
+            if (userAnswer === correctAnswer) {
+                feedback.innerHTML = '<p class="text-green-600 font-bold">✅ Parfait ! Continuez comme ça.</p>';
+                feedback.className = 'mt-4 p-3 bg-green-50 rounded-lg';
+                setTimeout(() => {
+                    window.currentWordIndex++;
+                    loadWordChallenge();
+                }, 2000);
+            } else {
+                feedback.innerHTML = `<p class="text-red-600 font-bold">❌ Incorrect. Le mot était : <strong>${word.word}</strong></p>`;
+                feedback.className = 'mt-4 p-3 bg-red-50 rounded-lg';
+            }
+        }
+
+        function learnRule(rule) {
+            const ruleData = grammarRules[rule];
+            if (!ruleData) return;
+
+            const explanationContainer = document.getElementById('rule-explanation');
+            const contentContainer = document.getElementById('rule-content');
+            const exercisesContainer = document.getElementById('rule-exercises');
+
+            contentContainer.innerHTML = `
+                <h4 class="font-bold text-lg mb-3">${ruleData.title}</h4>
+                <p class="mb-4">${ruleData.explanation}</p>
+                <div class="mb-4">
+                    <strong>Règles importantes :</strong>
+                    <ul class="list-disc list-inside ml-4 mt-2">
+                        ${ruleData.rules.map(r => `<li>${r}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            if (ruleData.exercises) {
+                exercisesContainer.innerHTML = `
+                    <h5 class="font-bold mb-3">Exercices pratiques :</h5>
+                    <div id="rule-current-exercise"></div>
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary mr-2" onclick="checkRuleAnswer()">Vérifier</button>
+                        <button class="btn btn-info" onclick="nextRuleExercise()">Suivant</button>
+                    </div>
+                    <div id="rule-feedback" class="mt-4"></div>
+                `;
+
+                window.currentRuleExercises = ruleData.exercises;
+                window.currentRuleIndex = 0;
+                loadRuleExercise();
+            }
+
+            explanationContainer.classList.remove('hidden');
+            explanationContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadRuleExercise() {
+            if (!window.currentRuleExercises || window.currentRuleIndex >= window.currentRuleExercises.length) {
+                document.getElementById('rule-current-exercise').innerHTML = '<p class="text-green-600 font-bold">🎉 Excellente maîtrise de cette règle !</p>';
+                return;
+            }
+
+            const exercise = window.currentRuleExercises[window.currentRuleIndex];
+            document.getElementById('rule-current-exercise').innerHTML = `
+                <div class="quiz-question">${exercise.question}</div>
+                <div class="quiz-options" id="rule-options">
+                    ${exercise.options.map(option => `
+                        <div class="quiz-option" onclick="selectRuleOption(this, '${option}')">${option}</div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function selectRuleOption(element, option) {
+            document.querySelectorAll('#rule-options .quiz-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            element.dataset.selected = option;
+        }
+
+        function checkRuleAnswer() {
+            const selectedOption = document.querySelector('#rule-options .quiz-option.selected');
+            if (!selectedOption) {
+                document.getElementById('rule-feedback').innerHTML = '<p class="text-yellow-600">Veuillez sélectionner une réponse.</p>';
+                return;
+            }
+
+            const exercise = window.currentRuleExercises[window.currentRuleIndex];
+            const userAnswer = selectedOption.dataset.selected;
+            const feedback = document.getElementById('rule-feedback');
+
+            if (userAnswer === exercise.answer) {
+                feedback.innerHTML = '<p class="text-green-600 font-bold">✅ Correct ! Bien joué.</p>';
+                feedback.className = 'mt-4 p-3 bg-green-50 rounded-lg';
+            } else {
+                feedback.innerHTML = `<p class="text-red-600 font-bold">❌ Incorrect. La bonne réponse est : <strong>${exercise.answer}</strong></p>`;
+                feedback.className = 'mt-4 p-3 bg-red-50 rounded-lg';
+            }
+        }
+
+        function nextRuleExercise() {
+            window.currentRuleIndex++;
+            loadRuleExercise();
+            document.getElementById('rule-feedback').innerHTML = '';
+        }
+
+        // Grammar functions
+        function startGrammarAnalysis() {
+            document.getElementById('grammar-analysis').classList.remove('hidden');
+            generateSentenceToAnalyze();
+        }
+
+        function generateSentenceToAnalyze() {
+            const sentences = [
+                "Le chat noir mange sa nourriture.",
+                "Les enfants jouent joyeusement dans le grand jardin.",
+                "Ma gentille mère prépare délicieusement le dîner.",
+                "Nous allons rapidement à l'école en bus.",
+                "Il fait très beau aujourd'hui.",
+                "Cette belle fleur pousse lentement.",
+                "Mon petit frère court vite.",
+                "La voiture rouge roule doucement."
+            ];
+            const sentence = sentences[Math.floor(Math.random() * sentences.length)];
+            document.getElementById('sentence-to-analyze').textContent = sentence;
+            createWordHighlighting(sentence);
+        }
+
+        function createWordHighlighting(sentence) {
+            const words = sentence.split(' ');
+            const highlightContainer = document.getElementById('word-highlighting');
+            highlightContainer.innerHTML = '';
+            
+            words.forEach((word, index) => {
+                const span = document.createElement('span');
+                span.textContent = word + ' ';
+                span.className = 'cursor-pointer hover:bg-yellow-200 p-1 rounded transition-colors';
+                span.onclick = () => highlightWord(span, word);
+                highlightContainer.appendChild(span);
+            });
+        }
+
+        function highlightWord(element, word) {
+            // Remove previous selections
+            document.querySelectorAll('#word-highlighting span').forEach(span => {
+                span.className = 'cursor-pointer hover:bg-yellow-200 p-1 rounded transition-colors';
+            });
+            
+            element.className = 'cursor-pointer bg-blue-200 p-1 rounded';
+            
+            // Show word analysis
+            const analysis = analyzeWord(word);
+            document.getElementById('analysis-feedback').innerHTML = `
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <p><strong>Mot sélectionné :</strong> ${word}</p>
+                    <p><strong>Nature :</strong> ${analysis.nature}</p>
+                    <p><strong>Fonction possible :</strong> ${analysis.fonction}</p>
+                    <p><strong>Explication :</strong> ${analysis.explication}</p>
+                </div>
+            `;
+        }
+
+        function analyzeWord(word) {
+            const cleanWord = word.replace(/[.,!?;:]/, '').toLowerCase();
+            
+            const determinants = ['le', 'la', 'les', 'un', 'une', 'des', 'ce', 'cette', 'ces', 'mon', 'ma', 'mes', 'ton', 'ta', 'tes', 'son', 'sa', 'ses'];
+            const noms = ['chat', 'enfants', 'mère', 'jardin', 'école', 'bus', 'nourriture', 'dîner', 'fleur', 'frère', 'voiture'];
+            const verbes = ['mange', 'jouent', 'prépare', 'allons', 'fait', 'est', 'sont', 'pousse', 'court', 'roule'];
+            const adjectifs = ['noir', 'grand', 'gentille', 'beau', 'belle', 'petit', 'rouge'];
+            const adverbes = ['très', 'joyeusement', 'rapidement', 'délicieusement', 'aujourd\'hui', 'lentement', 'vite', 'doucement'];
+            
+            if (determinants.includes(cleanWord)) {
+                return {
+                    nature: 'Déterminant',
+                    fonction: 'Précise le nom',
+                    explication: 'Accompagne le nom et indique le genre et le nombre'
+                };
+            }
+            if (noms.includes(cleanWord)) {
+                return {
+                    nature: 'Nom',
+                    fonction: 'Sujet ou complément',
+                    explication: 'Désigne une personne, un animal, une chose ou une idée'
+                };
+            }
+            if (verbes.includes(cleanWord)) {
+                return {
+                    nature: 'Verbe',
+                    fonction: 'Prédicat',
+                    explication: 'Exprime une action, un état ou un devenir'
+                };
+            }
+            if (adjectifs.includes(cleanWord)) {
+                return {
+                    nature: 'Adjectif',
+                    fonction: 'Épithète ou attribut',
+                    explication: 'Qualifie ou caractérise le nom'
+                };
+            }
+            if (adverbes.includes(cleanWord)) {
+                return {
+                    nature: 'Adverbe',
+                    fonction: 'Complément circonstanciel',
+                    explication: 'Modifie le sens du verbe, de l\'adjectif ou d\'un autre adverbe'
+                };
+            }
+            
+            return {
+                nature: 'Mot invariable',
+                fonction: 'Diverses fonctions',
+                explication: 'Préposition, conjonction ou autre mot-outil'
+            };
+        }
+
+        function generateNewSentence() {
+            generateSentenceToAnalyze();
+            document.getElementById('analysis-feedback').innerHTML = '';
+        }
+
+        function startSentenceBuilder() {
+            document.getElementById('sentence-builder').classList.remove('hidden');
+            generateSentenceChallenge();
+        }
+
+        function generateSentenceChallenge() {
+            const challenges = [
+                {
+                    target: "Construisez une phrase avec sujet + verbe + complément",
+                    words: ["Le", "chat", "mange", "sa", "nourriture", "délicieusement"],
+                    solution: "Le chat mange délicieusement sa nourriture"
+                },
+                {
+                    target: "Formez une phrase interrogative",
+                    words: ["Où", "vas", "tu", "?", "aujourd'hui"],
+                    solution: "Où vas-tu aujourd'hui ?"
+                },
+                {
+                    target: "Créez une phrase avec un adjectif",
+                    words: ["Les", "enfants", "jouent", "dans", "le", "grand", "jardin"],
+                    solution: "Les enfants jouent dans le grand jardin"
+                },
+                {
+                    target: "Construisez une phrase négative",
+                    words: ["Je", "ne", "mange", "pas", "de", "légumes"],
+                    solution: "Je ne mange pas de légumes"
+                }
+            ];
+            
+            const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+            window.currentSentenceChallenge = challenge;
+            
+            document.getElementById('sentence-target').textContent = challenge.target;
+            
+            const wordsContainer = document.getElementById('available-words');
+            wordsContainer.innerHTML = '';
+            
+            challenge.words.forEach(word => {
+                const wordElement = document.createElement('span');
+                wordElement.className = 'bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-full cursor-pointer transition-colors';
+                wordElement.textContent = word;
+                wordElement.onclick = () => addWordToSentence(word, wordElement);
+                wordsContainer.appendChild(wordElement);
+            });
+            
+            document.getElementById('constructed-sentence').innerHTML = '';
+        }
+
+        function addWordToSentence(word, element) {
+            const constructedContainer = document.getElementById('constructed-sentence');
+            const wordElement = document.createElement('span');
+            wordElement.className = 'bg-green-100 hover:bg-green-200 px-3 py-1 rounded-full cursor-pointer transition-colors';
+            wordElement.textContent = word;
+            wordElement.onclick = () => removeWordFromSentence(wordElement, word);
+            
+            constructedContainer.appendChild(wordElement);
+            element.style.display = 'none';
+        }
+
+        function removeWordFromSentence(element, word) {
+            element.remove();
+            
+            // Show the word back in available words
+            const availableWords = document.getElementById('available-words');
+            Array.from(availableWords.children).forEach(child => {
+                if (child.textContent === word) {
+                    child.style.display = 'inline-block';
+                }
+            });
+        }
+
+        function checkSentence() {
+            const constructedWords = Array.from(document.getElementById('constructed-sentence').children)
+                .map(el => el.textContent);
+            const userSentence = constructedWords.join(' ');
+            const correctSentence = window.currentSentenceChallenge.solution;
+            
+            const feedback = document.getElementById('sentence-feedback');
+            if (userSentence === correctSentence) {
+                feedback.innerHTML = '<p class="text-green-600 font-bold">✅ Parfait ! Phrase correctement construite.</p>';
+                feedback.className = 'mt-4 p-3 bg-green-50 rounded-lg';
+            } else {
+                feedback.innerHTML = `
+                    <p class="text-orange-600 font-bold">⚠️ Phrase à améliorer</p>
+                    <p><strong>Votre phrase :</strong> ${userSentence}</p>
+                    <p><strong>Suggestion :</strong> ${correctSentence}</p>
+                `;
+                feedback.className = 'mt-4 p-3 bg-orange-50 rounded-lg';
+            }
+        }
+
+        function clearSentence() {
+            document.getElementById('constructed-sentence').innerHTML = '';
+            Array.from(document.getElementById('available-words').children).forEach(child => {
+                child.style.display = 'inline-block';
+            });
+            document.getElementById('sentence-feedback').innerHTML = '';
+        }
+
+        function exploreTensesAndModes() {
+            document.getElementById('tenses-modes').classList.remove('hidden');
+        }
+
+        function exploreMode(mode) {
+            const modeData = {
+                indicatif: {
+                    title: 'Le Mode Indicatif',
+                    explanation: 'Le mode de la réalité et de la certitude. Il présente les faits comme réels.',
+                    tenses: ['Présent', 'Passé composé', 'Imparfait', 'Plus-que-parfait', 'Passé simple', 'Futur simple', 'Futur antérieur'],
+                    examples: ['Je mange (présent)', 'J\'ai mangé (passé composé)', 'Je mangeais (imparfait)', 'Je mangerai (futur)']
+                },
+                subjonctif: {
+                    title: 'Le Mode Subjonctif',
+                    explanation: 'Le mode du doute, de l\'émotion, de la volonté et du jugement.',
+                    tenses: ['Présent', 'Passé', 'Imparfait', 'Plus-que-parfait'],
+                    examples: ['Il faut que je mange', 'Je doute qu\'il vienne', 'Bien qu\'il soit tard', 'Pourvu qu\'elle réussisse']
+                },
+                conditionnel: {
+                    title: 'Le Mode Conditionnel',
+                    explanation: 'Le mode de l\'hypothèse, de la politesse et de l\'imaginaire.',
+                    tenses: ['Présent', 'Passé première forme', 'Passé deuxième forme'],
+                    examples: ['Je mangerais si j\'avais faim', 'Pourriez-vous m\'aider ?', 'J\'aurais aimé venir', 'Si j\'étais riche, je voyagerais']
+                },
+                imperatif: {
+                    title: 'Le Mode Impératif',
+                    explanation: 'Le mode de l\'ordre, du conseil et de la prière.',
+                    tenses: ['Présent', 'Passé'],
+                    examples: ['Mange !', 'Mangeons ensemble', 'Mangez vite', 'Sois sage', 'Ayez confiance']
+                }
+            };
+
+            const data = modeData[mode];
+            if (!data) return;
+
+            const explanationContainer = document.getElementById('mode-explanation');
+            const contentContainer = document.getElementById('mode-content');
+            const exercisesContainer = document.getElementById('mode-exercises');
+
+            contentContainer.innerHTML = `
+                <h4 class="font-bold text-lg mb-3">${data.title}</h4>
+                <p class="mb-4">${data.explanation}</p>
+                <div class="mb-4">
+                    <strong>Temps disponibles :</strong>
+                    <ul class="list-disc list-inside ml-4 mt-2">
+                        ${data.tenses.map(t => `<li>${t}</li>`).join('')}
+                    </ul>
+                </div>
+                <div>
+                    <strong>Exemples :</strong>
+                    <ul class="list-disc list-inside ml-4 mt-2">
+                        ${data.examples.map(e => `<li>${e}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            exercisesContainer.innerHTML = `
+                <h5 class="font-bold mb-3">Exercice d'application :</h5>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <p class="mb-3">Identifiez le mode dans les phrases suivantes :</p>
+                    <div class="space-y-2">
+                        <div class="p-2 border rounded">
+                            <p>"Mange tes légumes !" → Mode : <select class="ml-2 p-1 border rounded text-base">
+                                <option value="">Choisir...</option>
+                                <option value="imperatif">Impératif</option>
+                                <option value="indicatif">Indicatif</option>
+                                <option value="subjonctif">Subjonctif</option>
+                            </select></p>
+                        </div>
+                        <div class="p-2 border rounded">
+                            <p>"Je voudrais un café" → Mode : <select class="ml-2 p-1 border rounded text-base">
+                                <option value="">Choisir...</option>
+                                <option value="conditionnel">Conditionnel</option>
+                                <option value="indicatif">Indicatif</option>
+                                <option value="subjonctif">Subjonctif</option>
+                            </select></p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mt-4" onclick="checkModeExercise()">Vérifier les réponses</button>
+                    <div id="mode-exercise-feedback" class="mt-4"></div>
+                </div>
+            `;
+
+            explanationContainer.classList.remove('hidden');
+            explanationContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function checkModeExercise() {
+            const selects = document.querySelectorAll('#mode-exercises select');
+            const answers = ['imperatif', 'conditionnel'];
+            let correct = 0;
+
+            selects.forEach((select, index) => {
+                if (select.value === answers[index]) {
+                    correct++;
+                    select.style.backgroundColor = '#d4edda';
+                } else {
+                    select.style.backgroundColor = '#f8d7da';
+                }
+            });
+
+            const feedback = document.getElementById('mode-exercise-feedback');
+            feedback.innerHTML = `<p class="font-bold">${correct}/${answers.length} bonnes réponses</p>`;
+            feedback.className = correct === answers.length ? 'text-green-600' : 'text-orange-600';
+        }
+
+        // Vocabulary functions
+        function exploreVocabularyThemes() {
+            document.getElementById('vocabulary-themes-extended').classList.remove('hidden');
+        }
+
+        function loadTheme(themeName) {
+            const theme = vocabularyData[themeName];
+            if (!theme) return;
+
+            const contentContainer = document.getElementById('theme-content');
+            const headerElement = document.getElementById('theme-header');
+            const wordsElement = document.getElementById('theme-words');
+
+            headerElement.innerHTML = `
+                <div class="text-4xl mb-2">${theme.icon}</div>
+                <h3 class="text-2xl font-bold capitalize">${themeName}</h3>
+                <p class="text-gray-600">${theme.words.length} mots à découvrir</p>
+            `;
+
+            wordsElement.innerHTML = '';
+            theme.words.forEach((word, index) => {
+                const wordTag = document.createElement('span');
+                wordTag.className = 'word-tag';
+                wordTag.textContent = word;
+                wordTag.onclick = () => pronounceWord(word);
+                wordTag.style.cursor = 'pointer';
+                wordTag.title = 'Cliquez pour écouter la prononciation';
+                wordTag.style.animationDelay = `${index * 0.05}s`;
+                wordTag.classList.add('animate-slide-in');
+                wordsElement.appendChild(wordTag);
+            });
+
+            // Store current theme for quiz
+            window.currentTheme = theme;
+            window.currentThemeName = themeName;
+
+            contentContainer.classList.remove('hidden');
+            contentContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function pronounceWord(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function startThemeQuiz() {
+            if (!window.currentTheme) return;
+            
+            // Create quiz from current theme
+            const words = window.currentTheme.words;
+            const quizWords = words.slice(0, 10); // Take first 10 words for quiz
+            
+            showCustomModal({
+                title: `Quiz - ${window.currentThemeName}`,
+                content: `
+                    <div id="theme-quiz-container">
+                        <div id="theme-quiz-progress" class="mb-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Question <span id="current-q">1</span> sur ${quizWords.length}</span>
+                                <span>Score: <span id="current-score">0</span></span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="theme-quiz-bar" class="bg-blue-600 h-2 rounded-full" style="width: ${100/quizWords.length}%"></div>
+                            </div>
+                        </div>
+                        <div id="theme-quiz-question" class="text-lg font-bold mb-4"></div>
+                        <div id="theme-quiz-options" class="space-y-2"></div>
+                        <div id="theme-quiz-feedback" class="mt-4"></div>
+                    </div>
+                `,
+                onShow: () => startThemeQuizLogic(quizWords)
+            });
+        }
+
+        function startThemeQuizLogic(words) {
+            window.themeQuizData = {
+                words: words,
+                currentIndex: 0,
+                score: 0,
+                totalQuestions: words.length
+            };
+            
+            loadThemeQuizQuestion();
+        }
+
+        function loadThemeQuizQuestion() {
+            const data = window.themeQuizData;
+            if (data.currentIndex >= data.totalQuestions) {
+                showThemeQuizResults();
+                return;
+            }
+
+            const correctWord = data.words[data.currentIndex];
+            const otherWords = data.words.filter(w => w !== correctWord);
+            const options = [correctWord, ...otherWords.sort(() => 0.5 - Math.random()).slice(0, 2)]
+                .sort(() => 0.5 - Math.random());
+
+            const definition = getWordDefinition(correctWord);
+            
+            document.getElementById('theme-quiz-question').textContent = 
+                `Quel mot correspond à cette définition : "${definition}" ?`;
+            
+            const optionsContainer = document.getElementById('theme-quiz-options');
+            optionsContainer.innerHTML = '';
+            
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'w-full p-3 text-left bg-gray-100 hover:bg-blue-100 rounded-lg transition-colors text-base';
+                button.textContent = option;
+                button.onclick = () => checkThemeQuizAnswer(option, correctWord);
+                optionsContainer.appendChild(button);
+            });
+
+            // Update progress
+            document.getElementById('current-q').textContent = data.currentIndex + 1;
+            document.getElementById('current-score').textContent = data.score;
+            const progress = ((data.currentIndex + 1) / data.totalQuestions) * 100;
+            document.getElementById('theme-quiz-bar').style.width = `${progress}%`;
+        }
+
+        function getWordDefinition(word) {
+            // Simple definitions for common words
+            const definitions = {
+                'pain': 'aliment de base fait de farine',
+                'eau': 'liquide transparent et inodore',
+                'maison': 'bâtiment où l\'on habite',
+                'père': 'parent masculin',
+                'mère': 'parent féminin',
+                'chien': 'animal domestique fidèle',
+                'chat': 'petit félin domestique',
+                'voiture': 'véhicule automobile',
+                'école': 'établissement d\'enseignement',
+                'livre': 'ouvrage imprimé',
+                'table': 'meuble avec un plateau',
+                'chaise': 'siège avec dossier',
+                'fenêtre': 'ouverture dans un mur',
+                'porte': 'panneau mobile pour fermer',
+                'jardin': 'terrain cultivé près d\'une maison',
+                'fromage': 'produit laitier fermenté',
+                'lait': 'liquide blanc produit par les mammifères',
+                'football': 'sport avec un ballon rond',
+                'tennis': 'sport avec une raquette',
+                'soleil': 'étoile du système solaire',
+                'lune': 'satellite naturel de la Terre'
+            };
+            
+            return definitions[word] || `terme du vocabulaire "${window.currentThemeName}"`;
+        }
+
+        function checkThemeQuizAnswer(userAnswer, correctAnswer) {
+            const data = window.themeQuizData;
+            const feedback = document.getElementById('theme-quiz-feedback');
+            
+            if (userAnswer === correctAnswer) {
+                data.score++;
+                feedback.innerHTML = '<p class="text-green-600 font-bold">✅ Correct !</p>';
+                feedback.className = 'mt-4 p-3 bg-green-50 rounded-lg';
+            } else {
+                feedback.innerHTML = `<p class="text-red-600 font-bold">❌ Incorrect. La bonne réponse était : ${correctAnswer}</p>`;
+                feedback.className = 'mt-4 p-3 bg-red-50 rounded-lg';
+            }
+
+            // Disable all buttons
+            document.querySelectorAll('#theme-quiz-options button').forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+            });
+
+            setTimeout(() => {
+                data.currentIndex++;
+                loadThemeQuizQuestion();
+            }, 2000);
+        }
+
+        function showThemeQuizResults() {
+            const data = window.themeQuizData;
+            const percentage = Math.round((data.score / data.totalQuestions) * 100);
+            
+            let message = `Quiz terminé !\nScore: ${data.score}/${data.totalQuestions} (${percentage}%)`;
+            if (percentage >= 80) message += '\n🎉 Excellent !';
+            else if (percentage >= 60) message += '\n👍 Bien joué !';
+            else message += '\n💪 Continuez à apprendre !';
+
+            document.getElementById('theme-quiz-container').innerHTML = `
+                <div class="text-center">
+                    <h3 class="text-xl font-bold mb-4">Résultats du Quiz</h3>
+                    <div class="text-lg">${message.replace(/\n/g, '<br>')}</div>
+                    <button class="btn btn-primary mt-4" onclick="closeModal()">Fermer</button>
+                </div>
+            `;
+        }
+
+        function playMemoryGame() {
+            if (!window.currentTheme) return;
+            
+            const words = window.currentTheme.words.slice(0, 8); // 8 pairs
+            const pairs = [...words, ...words].sort(() => 0.5 - Math.random());
+            
+            showCustomModal({
+                title: `Jeu de Mémoire - ${window.currentThemeName}`,
+                content: `
+                    <div id="memory-game-container" class="text-center">
+                        <div id="memory-score" class="mb-4">
+                            <span>Paires trouvées: <strong id="pairs-found">0</strong> / ${words.length}</span>
+                            <span class="ml-4">Essais: <strong id="attempts">0</strong></span>
+                        </div>
+                        <div id="memory-grid" class="memory-grid mx-auto"></div>
+                        <div id="memory-feedback" class="mt-4"></div>
+                    </div>
+                `,
+                onShow: () => startMemoryGameLogic(pairs, words.length)
+            });
+        }
+
+        function startMemoryGameLogic(cards, totalPairs) {
+            window.memoryGame = {
+                cards: cards,
+                flipped: [],
+                matched: [],
+                attempts: 0,
+                pairsFound: 0,
+                totalPairs: totalPairs
+            };
+
+            const grid = document.getElementById('memory-grid');
+            grid.innerHTML = '';
+            
+            cards.forEach((word, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.word = word;
+                card.dataset.index = index;
+                card.textContent = '?';
+                card.onclick = () => flipMemoryCard(card, word);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipMemoryCard(card, word) {
+            const game = window.memoryGame;
+            
+            if (game.flipped.length >= 2 || card.classList.contains('flipped') || game.matched.includes(card.dataset.index)) {
+                return;
+            }
+
+            card.classList.add('flipped');
+            card.textContent = word;
+            game.flipped.push({card, word, index: card.dataset.index});
+
+            if (game.flipped.length === 2) {
+                game.attempts++;
+                document.getElementById('attempts').textContent = game.attempts;
+
+                setTimeout(() => checkMemoryMatch(), 1000);
+            }
+        }
+
+        function checkMemoryMatch() {
+            const game = window.memoryGame;
+            const [first, second] = game.flipped;
+
+            if (first.word === second.word) {
+                // Match found
+                game.matched.push(first.index, second.index);
+                game.pairsFound++;
+                document.getElementById('pairs-found').textContent = game.pairsFound;
+                
+                first.card.style.backgroundColor = '#10b981';
+                second.card.style.backgroundColor = '#10b981';
+
+                if (game.pairsFound === game.totalPairs) {
+                    setTimeout(() => {
+                        document.getElementById('memory-feedback').innerHTML = 
+                            `<p class="text-green-600 font-bold text-lg">🎉 Félicitations ! Vous avez trouvé toutes les paires en ${game.attempts} essais !</p>`;
+                    }, 500);
+                }
+            } else {
+                // No match
+                setTimeout(() => {
+                    first.card.classList.remove('flipped');
+                    second.card.classList.remove('flipped');
+                    first.card.textContent = '?';
+                    second.card.textContent = '?';
+                }, 500);
+            }
+
+            game.flipped = [];
+        }
+
+        // AI Conversation
+        function startAIConversation() {
+            document.getElementById('ai-conversation').classList.remove('hidden');
+        }
+
+        function sendAIMessage() {
+            const input = document.getElementById('ai-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesContainer = document.getElementById('ai-messages');
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chatbot-message user';
+            userMessage.textContent = message;
+            messagesContainer.appendChild(userMessage);
+            
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Generate AI response
+            setTimeout(() => {
+                const botResponse = generateAIResponse(message);
+                const botMessage = document.createElement('div');
+                botMessage.className = 'chatbot-message bot';
+                botMessage.innerHTML = botResponse;
+                messagesContainer.appendChild(botMessage);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1000);
+        }
+
+        function generateAIResponse(message) {
+            const responses = {
+                conjugation: {
+                    patterns: ['conjuguer', 'conjugaison', 'verbe', 'temps', 'présent', 'passé', 'futur'],
+                    responses: [
+                        "La conjugaison française suit des règles précises. Les verbes du 1er groupe (-er) sont les plus réguliers. Voulez-vous que je vous explique un temps en particulier ?",
+                        "Pour bien conjuguer, il faut d'abord identifier le groupe du verbe : 1er (-er), 2e (-ir avec -issons), 3e (irréguliers). Quel verbe vous pose problème ?",
+                        "Les temps les plus importants à maîtriser sont : présent, passé composé, imparfait et futur. Sur lequel voulez-vous vous exercer ?"
+                    ]
+                },
+                orthography: {
+                    patterns: ['orthographe', 'écrire', 'faute', 'accent', 'homophone'],
+                    responses: [
+                        "L'orthographe française a ses difficultés, mais avec de la pratique, on progresse ! Les accents (é, è, ê) et les homophones (à/a, et/est) sont souvent problématiques.",
+                        "Pour améliorer votre orthographe, je recommande : 1) Lire beaucoup, 2) Faire des dictées, 3) Apprendre les règles principales. Quelle difficulté rencontrez-vous ?",
+                        "Les mots fréquents mal orthographiés incluent : 'développement', 'événement', 'différent'. Voulez-vous que je vous propose des exercices ?"
+                    ]
+                },
+                grammar: {
+                    patterns: ['grammaire', 'accord', 'participe', 'sujet', 'complément'],
+                    responses: [
+                        "La grammaire structure notre langue. Les accords (sujet-verbe, adjectif-nom) et les fonctions (sujet, COD, COI) sont essentiels. Quel point vous intéresse ?",
+                        "Pour analyser une phrase, identifiez d'abord le verbe, puis le sujet (qui fait l'action ?), puis les compléments. Voulez-vous un exemple ?",
+                        "L'accord du participe passé dépend de l'auxiliaire : avec 'être', il s'accorde avec le sujet ; avec 'avoir', c'est plus complexe. Besoin d'exemples ?"
+                    ]
+                },
+                vocabulary: {
+                    patterns: ['vocabulaire', 'mot', 'sens', 'définition', 'synonyme'],
+                    responses: [
+                        "Enrichir son vocabulaire demande de la régularité. Lisez varié, notez les mots nouveaux, utilisez-les en contexte. Quel thème vous intéresse ?",
+                        "Les champs lexicaux aident à mémoriser : famille, maison, nature... Associer les mots par thème facilite l'apprentissage. Voulez-vous explorer un thème ?",
+                        "Pour retenir un mot nouveau : 1) Comprendre son sens, 2) L'utiliser dans une phrase, 3) Le réviser régulièrement. Quel mot vous pose problème ?"
+                    ]
+                },
+                games: {
+                    patterns: ['jeu', 'jouer', 'quiz', 'exercice', 'activité'],
+                    responses: [
+                        "Les jeux sont excellents pour apprendre ! Nous avons des quiz, des jeux de mémoire, des dictées interactives... Quel type d'activité préférez-vous ?",
+                        "L'apprentissage ludique améliore la rétention. Essayez nos jeux de vocabulaire par thème ou nos quiz de conjugaison adaptatifs !",
+                        "Voulez-vous jouer ? Je peux vous proposer des anagrammes, des chaînes de mots, ou des quiz personnalisés selon votre niveau."
+                    ]
+                },
+                default: [
+                    "C'est une excellente question ! En français, chaque règle a ses nuances. Pouvez-vous être plus précis sur ce qui vous intéresse ?",
+                    "Je suis là pour vous aider avec tous les aspects du français : conjugaison, orthographe, grammaire, vocabulaire. Que voulez-vous approfondir ?",
+                    "L'apprentissage du français est un voyage passionnant ! Chaque difficulté est une opportunité de progresser. Quel défi voulez-vous relever ?",
+                    "N'hésitez pas à me poser des questions spécifiques ! Je peux vous expliquer des règles, corriger des erreurs, ou créer des exercices personnalisés.",
+                    "Formidable ! Continuez à pratiquer régulièrement. La clé du succès en français, c'est la persévérance. Sur quoi travaillons-nous ensemble ?"
+                ]
+            };
+
+            // Find matching category
+            for (const [category, data] of Object.entries(responses)) {
+                if (category !== 'default' && data.patterns.some(pattern => 
+                    message.toLowerCase().includes(pattern))) {
+                    return data.responses[Math.floor(Math.random() * data.responses.length)];
+                }
+            }
+
+            return responses.default[Math.floor(Math.random() * responses.default.length)];
+        }
+
+        function handleEnterPress(event) {
+            if (event.key === 'Enter') {
+                sendAIMessage();
+            }
+        }
+
+        // Content Generator functions
+        function generateContent(type) {
+            document.getElementById('content-options').classList.remove('hidden');
+            window.selectedContentType = type;
+        }
+
+        function createContent() {
+            const level = document.getElementById('content-level').value;
+            const theme = document.getElementById('content-theme').value;
+            const type = window.selectedContentType;
+
+            const generatedContainer = document.getElementById('generated-content');
+            const resultContainer = document.getElementById('content-result');
+
+            // Simulate content generation
+            let content = '';
+            switch(type) {
+                case 'story':
+                    content = generateStory(level, theme);
+                    break;
+                case 'exercises':
+                    content = generateExercises(level, theme);
+                    break;
+                case 'poem':
+                    content = generatePoem(level, theme);
+                    break;
+                case 'dialogue':
+                    content = generateDialogue(level, theme);
+                    break;
+            }
+
+            resultContainer.innerHTML = content;
+            generatedContainer.classList.remove('hidden');
+            generatedContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateStory(level, theme) {
+            const stories = {
+                debutant: {
+                    aventure: "Il était une fois un petit garçon nommé Tom. Tom aimait explorer. Un jour, il trouve une carte mystérieuse dans le grenier de sa grand-mère. La carte montre un trésor caché dans la forêt près de sa maison. Tom prend son sac à dos et part à l'aventure. Dans la forêt, il rencontre un écureuil qui lui montre le chemin. Finalement, Tom trouve le trésor : une boîte pleine de photos anciennes de sa famille.",
+                    quotidien: "Marie se réveille à sept heures. Elle prend son petit-déjeuner : du pain avec de la confiture et un verre de lait. Puis elle se brosse les dents et s'habille pour l'école. À l'école, elle apprend les mathématiques et le français. À midi, elle mange à la cantine avec ses amis. L'après-midi, elle fait du sport. Le soir, elle rentre à la maison, fait ses devoirs et dîne avec sa famille.",
+                    fantastique: "Dans un château magique vivait une petite fée nommée Luna. Elle avait des ailes brillantes et une baguette dorée. Chaque nuit, Luna aidait les enfants à avoir de beaux rêves. Un soir, elle découvre qu'un méchant sorcier vole les rêves. Luna décide de l'arrêter. Avec l'aide de ses amis les animaux, elle trouve le sorcier et lui reprend tous les rêves volés.",
+                    science: "Paul adore les étoiles. Avec son télescope, il observe le ciel chaque soir. Un jour, il voit quelque chose d'étrange : une lumière qui bouge. Paul pense que c'est peut-être un satellite ou la station spatiale. Il prend des photos et les montre à son professeur. Ensemble, ils découvrent que c'est effectivement la station spatiale internationale qui passe au-dessus de leur ville."
+                },
+                intermediaire: {
+                    aventure: "L'explorateur Jacques Durand venait de découvrir une ancienne civilisation perdue dans la jungle amazonienne. Les symboles gravés sur les pierres ressemblaient à ceux qu'il avait étudiés pendant des années. Soudain, il entendit un bruit étrange venant des profondeurs du temple. Son cœur battait rapidement alors qu'il s'avançait prudemment, sa lampe de poche à la main. Ce qu'il découvrit allait changer sa vie à jamais : une chambre secrète remplie d'artéfacts précolombiens parfaitement conservés.",
+                    quotidien: "Chaque matin, Sylvie prend le métro pour se rendre au bureau. Pendant le trajet, elle lit les actualités sur son téléphone et planifie sa journée de travail. Arrivée au bureau, elle consulte ses emails et participe à plusieurs réunions. Le déjeuner est souvent pris rapidement à son bureau en travaillant sur ses dossiers. L'après-midi est consacré aux projets en cours et aux appels clients. Le soir, elle retrouve des amis pour boire un verre ou rentre directement chez elle pour se détendre devant un bon livre.",
+                    fantastique: "Dans le royaume d'Aetheria, la magie commençait à disparaître mystérieusement. La jeune magicienne Élara remarqua que ses sorts perdaient de leur puissance jour après jour. Déterminée à découvrir la cause de ce phénomène, elle entreprit un voyage périlleux vers la Source Primordiale, le cœur magique du royaume. En chemin, elle rencontra un dragon sage qui lui révéla qu'un ancien sortilège avait été brisé, libérant une force obscure qui dévorait la magie du monde.",
+                    science: "Le laboratoire de recherche spatiale bruissait d'activité. L'équipe du Dr Martin avait détecté un signal radio inhabituel en provenance d'une galaxie lointaine. Contrairement aux signaux naturels habituels, celui-ci présentait des motifs répétitifs et structurés qui suggéraient une origine artificielle. Après des semaines d'analyse, les scientifiques commençaient à envisager l'impensable : ils avaient peut-être intercepté la première preuve d'une intelligence extraterrestre."
+                },
+                avance: {
+                    aventure: "Au cœur des montagnes de l'Himalaya, l'alpiniste chevronnée Sarah McKenzie se trouvait confrontée au défi de sa vie. La tempête de neige qui s'abattait sur elle depuis trois jours avait transformé son expédition en lutte pour la survie. Ses provisions s'amenuisaient, et la visibilité quasi nulle rendait impossible toute progression vers le camp de base. Pourtant, quelque chose dans ces montagnes mystérieuses l'appelait, une force ancienne qu'elle ne parvenait pas à expliquer rationnellement. Lorsque les nuages se dissipèrent enfin, elle aperçut au loin une structure qui ne figurait sur aucune carte.",
+                    quotidien: "Dans cette époque d'hyperconnectivité, Marc, consultant en transformation digitale, jonglait entre les fuseaux horaires et les cultures d'entreprise. Sa journée type commençait à 6h par une visioconférence avec Tokyo, se poursuivait par des analyses de données pour ses clients européens, et se terminait souvent tard le soir par des présentations stratégiques pour ses partenaires américains. Cette vie trépidante, bien qu'enrichissante intellectuellement, commençait à peser sur sa vie personnelle. Il réfléchissait de plus en plus à un rééquilibrage, cherchant un moyen de concilier ambition professionnelle et épanouissement personnel."
+                }
+            };
+
+            return stories[level]?.[theme] || "Histoire en cours de génération...";
+        }
+
+        function generateExercises(level, theme) {
+            const exercises = {
+                debutant: `
+                    <h4>Exercices de ${level} - Thème: ${theme}</h4>
+                    <div class="space-y-4 mt-4">
+                        <div class="p-4 border rounded">
+                            <strong>Exercice 1:</strong> Complétez les phrases avec le mot approprié.
+                            <p class="mt-2">1. Le _____ explore la jungle. (explorateur/exploration)</p>
+                            <p>2. Marie _____ son petit-déjeuner. (prend/prendre)</p>
+                            <p>3. Le trésor est _____ dans la forêt. (caché/cacher)</p>
+                        </div>
+                        <div class="p-4 border rounded">
+                            <strong>Exercice 2:</strong> Conjuguez les verbes entre parenthèses au présent.
+                            <p class="mt-2">1. Tom (partir) _____ à l'aventure.</p>
+                            <p>2. Nous (découvrir) _____ un secret.</p>
+                            <p>3. Elle (se réveiller) _____ tôt le matin.</p>
+                        </div>
+                        <div class="p-4 border rounded">
+                            <strong>Exercice 3:</strong> Choisissez la bonne orthographe.
+                            <p class="mt-2">1. Il fait (beau/bo) aujourd'hui.</p>
+                            <p>2. Les (enfant/enfants) jouent.</p>
+                            <p>3. Ma (mère/mer) cuisine bien.</p>
+                        </div>
+                    </div>
+                `,
+                intermediaire: `
+                    <h4>Exercices de ${level} - Thème: ${theme}</h4>
+                    <div class="space-y-4 mt-4">
+                        <div class="p-4 border rounded">
+                            <strong>Exercice 1:</strong> Accordez le participe passé.
+                            <p class="mt-2">1. Les découvertes qu'il a fait___ sont importantes.</p>
+                            <p>2. Elle s'est levé___ tôt ce matin.</p>
+                            <p>3. Les lettres que j'ai écrit___ sont parties.</p>
+                        </div>
+                        <div class="p-4 border rounded">
+                            <strong>Exercice 2:</strong> Conjuguez au temps approprié.
+                            <p class="mt-2">1. Si j'avais plus de temps, je (voyager) _____ davantage.</p>
+                            <p>2. Quand tu (arriver) _____ demain, appelle-moi.</p>
+                            <p>3. Il faut que vous (être) _____ à l'heure.</p>
+                        </div>
+                        <div class="p-4 border rounded">
+                            <strong>Exercice 3:</strong> Analysez la fonction des mots soulignés.
+                            <p class="mt-2">1. <u>L'explorateur</u> découvre <u>un temple</u>.</p>
+                            <p>2. <u>Prudemment</u>, il avance dans <u>l'obscurité</u>.</p>
+                        </div>
+                    </div>
+                `,
+                avance: `
+                    <h4>Exercices de ${level} - Thème: ${theme}</h4>
+                    <div class="space-y-4 mt-4">
+                        <div class="p-4 border rounded">
+                            <strong>Exercice 1:</strong> Réécrivez en évitant les répétitions.
+                            <p class="mt-2">"Sarah McKenzie était une alpiniste. Sarah McKenzie était expérimentée. Sarah McKenzie gravissait la montagne. La montagne était dangereuse."</p>
+                        </div>
+                        <div class="p-4 border rounded">
+                            <strong>Exercice 2:</strong> Transformez les phrases en utilisant le subjonctif.
+                            <p class="mt-2">1. Il partira demain. → Je doute qu'il...</p>
+                            <p>2. Vous réussirez. → Il faut que vous...</p>
+                            <p>3. Tu comprends. → Je ne pense pas que tu...</p>
+                        </div>
+                        <div class="p-4 border rounded">
+                            <strong>Exercice 3:</strong> Identifiez les figures de style.
+                            <p class="mt-2">1. "La montagne l'appelait"</p>
+                            <p>2. "Un silence de mort régnait"</p>
+                            <p>3. "Ses yeux brillaient comme des étoiles"</p>
+                        </div>
+                    </div>
+                `
+            };
+
+            return exercises[level] || exercises.debutant;
+        }
+
+        function generatePoem(level, theme) {
+            const poems = {
+                debutant: `
+                    <h4>Poème simple - ${theme}</h4>
+                    <div class="mt-4 italic">
+                        <p>Dans la forêt mystérieuse,</p>
+                        <p>Tom marche courageusement.</p>
+                        <p>Il cherche le trésor précieux,</p>
+                        <p>Guidé par l'écureuil gentiment.</p>
+                        <br>
+                        <p>La nature est merveilleuse,</p>
+                        <p>Les arbres dansent doucement.</p>
+                        <p>L'aventure est fabuleuse,</p>
+                        <p>Tom sourit joyeusement.</p>
+                    </div>
+                `,
+                intermediaire: `
+                    <h4>Poème élaboré - ${theme}</h4>
+                    <div class="mt-4 italic">
+                        <p>Dans les méandres du temps qui passe,</p>
+                        <p>L'explorateur trace sa voie,</p>
+                        <p>Chaque découverte efface</p>
+                        <p>Les doutes qui troublaient sa foi.</p>
+                        <br>
+                        <p>La jungle garde ses mystères,</p>
+                        <p>Comme un livre aux pages scellées,</p>
+                        <p>Mais l'homme persévère</p>
+                        <p>Pour voir ses rêves révélés.</p>
+                    </div>
+                `,
+                avance: `
+                    <h4>Poème sophistiqué - ${theme}</h4>
+                    <div class="mt-4 italic">
+                        <p>Au sommet des cimes enneigées,</p>
+                        <p>Où l'air se raréfie et brûle,</p>
+                        <p>L'alpiniste aux forces ménagées</p>
+                        <p>Affronte la montagne qui hurle.</p>
+                        <br>
+                        <p>Dans ce théâtre de glace et de pierre,</p>
+                        <p>Où chaque pas défie l'abîme,</p>
+                        <p>Se révèle la nature première</p>
+                        <p>De l'homme face au sublime.</p>
+                        <br>
+                        <p>Car au-delà des tempêtes blanches,</p>
+                        <p>Résonne l'appel ancestral</p>
+                        <p>Qui vers les hauteurs nous penche</p>
+                        <p>En quête de l'idéal.</p>
+                    </div>
+                `
+            };
+
+            return poems[level] || poems.debutant;
+        }
+
+        function generateDialogue(level, theme) {
+            const dialogues = {
+                debutant: `
+                    <h4>Dialogue simple - ${theme}</h4>
+                    <div class="mt-4 space-y-2">
+                        <p><strong>Tom :</strong> Grand-mère, qu'est-ce que c'est que cette vieille carte ?</p>
+                        <p><strong>Grand-mère :</strong> Oh, c'est une carte très spéciale, mon petit. Ton grand-père l'avait dessinée.</p>
+                        <p><strong>Tom :</strong> Elle montre un trésor ! Est-ce que je peux le chercher ?</p>
+                        <p><strong>Grand-mère :</strong> Bien sûr, mais sois prudent. La forêt peut être dangereuse.</p>
+                        <p><strong>Tom :</strong> Je promets d'être très prudent ! Merci grand-mère !</p>
+                        <p><strong>Grand-mère :</strong> Bonne chance dans ton aventure, mon chéri.</p>
+                    </div>
+                `,
+                intermediaire: `
+                    <h4>Dialogue élaboré - ${theme}</h4>
+                    <div class="mt-4 space-y-2">
+                        <p><strong>Jacques :</strong> Professeur Martinez, vous devez voir ce que j'ai découvert dans la jungle !</p>
+                        <p><strong>Prof. Martinez :</strong> Calmez-vous, Jacques. Expliquez-moi clairement ce qui s'est passé.</p>
+                        <p><strong>Jacques :</strong> J'ai trouvé un temple précolombien intact ! Les symboles correspondent exactement à nos recherches.</p>
+                        <p><strong>Prof. Martinez :</strong> C'est extraordinaire ! Avez-vous pris des photos ? Documenté la position GPS ?</p>
+                        <p><strong>Jacques :</strong> Bien sûr. Mais ce n'est pas tout... Il y a quelque chose d'étrange à l'intérieur.</p>
+                        <p><strong>Prof. Martinez :</strong> Que voulez-vous dire par "étrange" ?</p>
+                        <p><strong>Jacques :</strong> Les artéfacts semblent avoir été préservés par une technologie inconnue...</p>
+                    </div>
+                `,
+                avance: `
+                    <h4>Dialogue sophistiqué - ${theme}</h4>
+                    <div class="mt-4 space-y-2">
+                        <p><strong>Sarah :</strong> Base camp, ici Sarah. Ma position est compromise. La tempête a détruit mes repères.</p>
+                        <p><strong>Coordinateur :</strong> Sarah, nous vous recevons faiblement. Pouvez-vous nous donner votre position approximative ?</p>
+                        <p><strong>Sarah :</strong> Négatif. GPS hors service depuis hier. Mais j'ai aperçu une structure inhabituelle au nord-est.</p>
+                        <p><strong>Coordinateur :</strong> Une structure ? Sarah, il n'y a rien de référencé dans cette zone selon nos cartes.</p>
+                        <p><strong>Sarah :</strong> C'est bien ce qui m'inquiète... ou m'intrigue. L'architecture ne correspond à rien de connu.</p>
+                        <p><strong>Coordinateur :</strong> Sarah, votre priorité doit être la survie. Cherchez un abri et attendez l'accalmie.</p>
+                        <p><strong>Sarah :</strong> Compris, mais cette découverte pourrait révolutionner notre compréhension de cette région...</p>
+                    </div>
+                `
+            };
+
+            return dialogues[level] || dialogues.debutant;
+        }
+
+        function analyzeContent() {
+            const content = document.getElementById('content-result').textContent;
+            showCustomModal({
+                title: 'Analyse du contenu généré',
+                content: `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-4 bg-blue-50 rounded">
+                                <h5 class="font-bold">Statistiques</h5>
+                                <p>Mots: ${content.split(' ').length}</p>
+                                <p>Phrases: ${content.split('.').length - 1}</p>
+                                <p>Caractères: ${content.length}</p>
+                            </div>
+                            <div class="p-4 bg-green-50 rounded">
+                                <h5 class="font-bold">Niveau estimé</h5>
+                                <p>Difficulté: ${content.length > 500 ? 'Avancé' : content.length > 200 ? 'Intermédiaire' : 'Débutant'}</p>
+                                <p>Lisibilité: Bonne</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-yellow-50 rounded">
+                            <h5 class="font-bold">Points d'apprentissage</h5>
+                            <ul class="list-disc list-inside">
+                                <li>Vocabulaire varié adapté au niveau</li>
+                                <li>Structure narrative claire</li>
+                                <li>Temps verbaux cohérents</li>
+                                <li>Progression logique de l'histoire</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            });
+        }
+
+        function analyzeText() {
+            const text = document.getElementById('text-to-analyze').value;
+            if (!text.trim()) {
+                showFeedback('Veuillez saisir un texte à analyser.', 'warning');
+                return;
+            }
+
+            const analysis = performTextAnalysis(text);
+            
+            document.getElementById('text-stats').innerHTML = `
+                <p>Mots: ${analysis.wordCount}</p>
+                <p>Phrases: ${analysis.sentenceCount}</p>
+                <p>Caractères: ${analysis.charCount}</p>
+                <p>Paragraphes: ${analysis.paragraphCount}</p>
+            `;
+
+            document.getElementById('difficulty-level').innerHTML = `
+                <div class="text-lg font-bold ${analysis.difficulty.color}">${analysis.difficulty.level}</div>
+                <p class="text-sm">${analysis.difficulty.description}</p>
+            `;
+
+            document.getElementById('improvement-suggestions').innerHTML = analysis.suggestions
+                .map(s => `<p>• ${s}</p>`).join('');
+
+            document.getElementById('detected-errors').innerHTML = analysis.errors.length > 0
+                ? analysis.errors.map(e => `<p class="text-red-600">• ${e}</p>`).join('')
+                : '<p class="text-green-600">Aucune erreur majeure détectée.</p>';
+
+            document.getElementById('analysis-results').classList.remove('hidden');
+        }
+
+        function performTextAnalysis(text) {
+            const words = text.split(/\s+/).filter(w => w.length > 0);
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+
+            const avgWordsPerSentence = words.length / sentences.length;
+            const avgCharsPerWord = text.replace(/\s/g, '').length / words.length;
+
+            let difficulty;
+            if (avgWordsPerSentence > 20 || avgCharsPerWord > 6) {
+                difficulty = { level: 'Avancé', color: 'text-red-600', description: 'Texte complexe avec phrases longues' };
+            } else if (avgWordsPerSentence > 12 || avgCharsPerWord > 5) {
+                difficulty = { level: 'Intermédiaire', color: 'text-yellow-600', description: 'Difficulté modérée' };
+            } else {
+                difficulty = { level: 'Débutant', color: 'text-green-600', description: 'Texte accessible' };
+            }
+
+            const suggestions = [
+                avgWordsPerSentence > 25 ? 'Considérez raccourcir certaines phrases' : null,
+                sentences.length < 3 ? 'Ajoutez plus de phrases pour développer vos idées' : null,
+                words.length < 50 ? 'Développez davantage votre texte' : null,
+                'Variez la structure de vos phrases',
+                'Utilisez des connecteurs logiques'
+            ].filter(Boolean);
+
+            const errors = [];
+            if (text.includes('  ')) errors.push('Espaces doubles détectés');
+            if (!/[.!?]$/.test(text.trim())) errors.push('Le texte ne se termine pas par une ponctuation');
+            if (text.includes(',;')) errors.push('Ponctuation incorrecte détectée');
+
+            return {
+                wordCount: words.length,
+                sentenceCount: sentences.length,
+                charCount: text.length,
+                paragraphCount: paragraphs.length,
+                difficulty,
+                suggestions,
+                errors
+            };
+        }
+
+        // Modal and utility functions
+        function showCustomModal({title, content, onShow}) {
+            // Create modal backdrop
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-center p-6 border-b">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">${title}</h3>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        ${content}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            window.currentModal = modal;
+            
+            if (onShow) onShow();
+            
+            // Close on backdrop click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+        }
+
+        function closeModal() {
+            if (window.currentModal) {
+                document.body.removeChild(window.currentModal);
+                window.currentModal = null;
+            }
+        }
+
+        // Utility functions
+        function showFeedback(message, type) {
+            const feedbackElement = document.getElementById('quiz-feedback');
+            if (feedbackElement) {
+                feedbackElement.textContent = message;
+                feedbackElement.className = `quiz-feedback ${type}`;
+            }
+        }
+
+        function showTensesOverview() {
+            document.getElementById('tenses-overview').classList.remove('hidden');
+        }
+
+        function startVoiceTraining() {
+            document.getElementById('voice-training').classList.remove('hidden');
+            generateRandomWordToPronounce();
+        }
+
+        function startDictation() {
+            document.getElementById('dictation-exercise').classList.remove('hidden');
+            const sentences = [
+                "Le chat mange sa nourriture.",
+                "Les enfants jouent dans le jardin.",
+                "Ma mère prépare le dîner.",
+                "Nous allons à l'école en bus.",
+                "Il fait beau aujourd'hui.",
+                "La voiture rouge roule vite.",
+                "Je lis un livre intéressant.",
+                "Elle chante une belle chanson.",
+                "Nous étudions le français.",
+                "Ils habitent près de la mer."
+            ];
+            window.currentDictationSentence = sentences[Math.floor(Math.random() * sentences.length)];
+            setupDictationAudio();
+        }
+
+        function showFrequentWords() {
+            document.getElementById('frequent-words').classList.remove('hidden');
+        }
+
+        function showOrthographyRules() {
+            document.getElementById('orthography-rules').classList.remove('hidden');
+        }
+
+        function startSpecializedLearning() {
+            document.getElementById('specialized-learning').classList.remove('hidden');
+        }
+
+        function showAdvancedGames() {
+            document.getElementById('advanced-games').classList.remove('hidden');
+        }
+
+        function showContentGenerator() {
+            document.getElementById('content-generator').classList.remove('hidden');
+        }
+
+        function showTextAnalyzer() {
+            document.getElementById('text-analyzer').classList.remove('hidden');
+        }
+
+        // Game functions (placeholders for advanced games)
+        function startSpacedRepetition() {
+            showCustomModal({
+                title: 'Répétition Espacée',
+                content: `
+                    <div class="text-center">
+                        <p class="mb-4">La répétition espacée optimise la mémorisation en révisant les mots au moment optimal.</p>
+                        <p>Cette fonctionnalité sera bientôt disponible !</p>
+                        <button class="btn btn-primary mt-4" onclick="closeModal()">Fermer</button>
+                    </div>
+                `
+            });
+        }
+
+        function startAssociationGame() {
+            showCustomModal({
+                title: 'Jeu d\'Associations',
+                content: `
+                    <div class="text-center">
+                        <p class="mb-4">Créez des liens mnémotechniques pour mémoriser plus facilement.</p>
+                        <p>Cette fonctionnalité sera bientôt disponible !</p>
+                        <button class="btn btn-primary mt-4" onclick="closeModal()">Fermer</button>
+                    </div>
+                `
+            });
+        }
+
+        function startContextualLearning() {
+            showCustomModal({
+                title: 'Apprentissage Contextuel',
+                content: `
+                    <div class="text-center">
+                        <p class="mb-4">Apprenez les mots dans leur contexte naturel d'utilisation.</p>
+                        <p>Cette fonctionnalité sera bientôt disponible !</p>
+                        <button class="btn btn-primary mt-4" onclick="closeModal()">Fermer</button>
+                    </div>
+                `
+            });
+        }
+
+        function startVisualLearning() {
+            showCustomModal({
+                title: 'Apprentissage Visuel',
+                content: `
+                    <div class="text-center">
+                        <p class="mb-4">Utilisez la mémoire visuelle pour une meilleure rétention.</p>
+                        <p>Cette fonctionnalité sera bientôt disponible !</p>
+                        <button class="btn btn-primary mt-4" onclick="closeModal()">Fermer</button>
+                    </div>
+                `
+            });
+        }
+
+        function playWordChain() {
+            showCustomModal({
+                title: 'Chaîne de Mots',
+                content: `
+                    <div class="text-center">
+                        <p class="mb-4">Créez des chaînes de mots en utilisant la dernière lettre du mot précédent.</p>
+                        <p>Cette fonctionnalité sera bientôt disponible !</p>
+                        <button class="btn btn-primary mt-4" onclick="closeModal()">Fermer</button>
+                    </div>
+                `
+            });
+        }
+
+        function playAnagramGame() {
+            showCustomModal({
+                title: 'Jeu d\'Anagrammes',
+                content: `
+                    <div class="text-center">
+                        <p class="mb-4">Trouvez des mots en réarrangeant les lettres données.</p>
+                        <p>Cette fonctionnalité sera bientôt disponible !</p>
+                        <button class="btn btn-primary mt-4" onclick="closeModal()">Fermer</button>
+                    </div>
+                `
+            });
+        }
+
+        function playDefinitionGuess() {
+            showCustomModal({
+                title: 'Devine la Définition',
+                content: `
+                    <div class="text-center">
+                        <p class="mb-4">Trouvez le mot qui correspond à la définition donnée.</p>
+                        <p>Cette fonctionnalité sera bientôt disponible !</p>
+                        <button class="btn btn-primary mt-4" onclick="closeModal()">Fermer</button>
+                    </div>
+                `
+            });
+        }
+
+        function playAdvancedMemory() {
+            showCustomModal({
+                title: 'Memory Avancé',
+                content: `
+                    <div class="text-center">
+                        <p class="mb-4">Version avancée du jeu de mémoire avec défis progressifs.</p>
+                        <p>Cette fonctionnalité sera bientôt disponible !</p>
+                        <button class="btn btn-primary mt-4" onclick="closeModal()">Fermer</button>
+                    </div>
+                `
+            });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('SOUMWEB - Plateforme d\'apprentissage du français initialisée');
+            
+            // Initialize dark mode
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        });
+    </script>
+</body>
+</html>
